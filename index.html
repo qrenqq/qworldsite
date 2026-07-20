@@ -417,6 +417,96 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #0d0518; }
     ::-webkit-scrollbar-thumb { background: #4a2d7a; border-radius: 3px; }
+
+    /* ── FARM WORLD ── */
+    .new-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(74,222,128,0.1));
+      border: 1px solid rgba(74,222,128,0.45);
+      color: #4ade80;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 5px 14px;
+      border-radius: 50px;
+      text-transform: uppercase;
+    }
+
+    /* Портал-визуал (SVG-рамка с "плёнкой") */
+    .portal-hero {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+    @keyframes portal-shimmer {
+      0%, 100% { opacity: 0.75; }
+      50% { opacity: 1; }
+    }
+    @keyframes portal-particle {
+      0%   { transform: translateY(6px); opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(-42px); opacity: 0; }
+    }
+    .portal-svg { width: 220px; height: auto; filter: drop-shadow(0 0 24px rgba(168,85,247,0.55)); }
+    .portal-svg .film { animation: portal-shimmer 2.6s ease-in-out infinite; }
+    .portal-svg .pp { animation: portal-particle 3s ease-in-out infinite; }
+    .portal-svg .pp:nth-child(2) { animation-delay: 0.6s; }
+    .portal-svg .pp:nth-child(3) { animation-delay: 1.2s; }
+    .portal-svg .pp:nth-child(4) { animation-delay: 1.8s; }
+    .portal-svg .pp:nth-child(5) { animation-delay: 2.4s; }
+
+    /* Шаги «как построить портал» */
+    .steps { display: grid; gap: 14px; }
+    .step-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: rgba(18,8,32,0.55);
+      border: 1px solid rgba(168,85,247,0.15);
+      border-radius: 12px;
+      padding: 16px 18px;
+      transition: all 0.25s ease;
+    }
+    .step-row:hover { border-color: rgba(168,85,247,0.4); background: rgba(45,27,78,0.5); transform: translateX(3px); }
+    .step-num {
+      flex-shrink: 0;
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--purple-bright), var(--purple-glow));
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 12px rgba(139,47,201,0.4);
+    }
+    .step-body .step-title { font-size: 0.98rem; font-weight: 700; color: #e2d9f3; margin-bottom: 3px; }
+    .step-body .step-desc { font-size: 0.85rem; color: #9d7dc8; line-height: 1.55; }
+    .step-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(168,85,247,0.15);
+      border: 1px solid rgba(168,85,247,0.25);
+      color: #c084fc;
+      padding: 1px 7px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+    }
+
+    .farm-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86efac;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 7px 15px;
+      border-radius: 50px;
+    }
+    .farm-tag.no { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: #fca5a5; }
   </style>
 </head>
 <body>
@@ -466,6 +556,7 @@
   <nav class="site-nav">
     <div class="site-nav-link active" onclick="switchSection('home', this)">🏠 Главная</div>
     <div class="site-nav-link" onclick="switchSection('plugin', this)">🧩 Плагин QWorld</div>
+    <div class="site-nav-link" onclick="switchSection('farmworld', this)">🌾 Мир ферм</div>
     <div class="site-nav-link" onclick="switchSection('commands', this)">⌨️ Команды</div>
     <div class="site-nav-link" onclick="switchSection('crafts', this)">🛠️ Крафты</div>
     <div class="site-nav-link" onclick="switchSection('resources', this)">📦 Ресурсы и моды</div>
@@ -581,10 +672,148 @@
         <div class="fc-item">Кирка помнит сломанные блоки, топор — срубленные деревья</div>
         <div class="fc-item">Оповещение всем при поломке предмета с историей</div>
       </div>
+      <div class="feature-card">
+        <div class="fc-title">⚰️ Система могил</div>
+        <div class="fc-item">После смерти на месте гибели появляется могила с твоей головой</div>
+        <div class="fc-item">Над ней — кто, когда и как погиб; забрать может только владелец, доверенные и админ</div>
+        <div class="fc-item">Броня и опыт возвращаются на свои места одним кликом</div>
+      </div>
     </div>
 
     <div style="text-align:center;">
       <a href="https://qrenqq.github.io/qworldpatchnote/" target="_blank" class="dl-btn">📦 Все патчноуты плагина</a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       МИР ФЕРМ
+  ═══════════════════════════════════════════════ -->
+  <section id="tab-farmworld" class="tab-section">
+    <div style="text-align:center;margin-bottom:14px;">
+      <span class="new-badge">✦ Новое обновление</span>
+    </div>
+    <div style="text-align:center;margin-bottom:36px;">
+      <h2 class="section-title">🌾 Мир ферм</h2>
+      <p class="section-subtitle">Отдельные миры для добычи ресурсов — фармь спокойно, основной мир останется чистым</p>
+    </div>
+
+    <!-- Портал-визуал -->
+    <div class="portal-hero">
+      <svg class="portal-svg" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- рамка из плачущего обсидиана -->
+        <g fill="#2a1440">
+          <rect x="30" y="20" width="140" height="30" rx="3"/>
+          <rect x="30" y="210" width="140" height="30" rx="3"/>
+          <rect x="30" y="20" width="30" height="220" rx="3"/>
+          <rect x="140" y="20" width="30" height="220" rx="3"/>
+        </g>
+        <!-- фиолетовые вкрапления обсидиана -->
+        <g fill="#8b2fc9" opacity="0.7">
+          <rect x="38" y="30" width="7" height="7"/><rect x="150" y="60" width="7" height="7"/>
+          <rect x="42" y="120" width="7" height="7"/><rect x="156" y="180" width="7" height="7"/>
+          <rect x="40" y="215" width="7" height="7"/><rect x="120" y="28" width="7" height="7"/>
+          <rect x="152" y="220" width="7" height="7"/><rect x="35" y="170" width="7" height="7"/>
+        </g>
+        <!-- плёнка портала (стекло) -->
+        <rect class="film" x="60" y="50" width="80" height="160" fill="url(#filmgrad)"/>
+        <defs>
+          <linearGradient id="filmgrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a855f7" stop-opacity="0.55"/>
+            <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#c084fc" stop-opacity="0.55"/>
+          </linearGradient>
+        </defs>
+        <!-- партиклы -->
+        <g fill="#e9a5ff">
+          <rect class="pp" x="80" y="180" width="4" height="4"/>
+          <rect class="pp" x="110" y="185" width="4" height="4"/>
+          <rect class="pp" x="95" y="175" width="4" height="4"/>
+          <rect class="pp" x="70" y="182" width="3" height="3"/>
+          <rect class="pp" x="122" y="178" width="3" height="3"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="card" style="margin-bottom:32px;">
+      <p style="color:#c4b5e8;line-height:1.8;font-size:0.95rem;">
+        <b style="color:#e2d9f3;">Мир ферм</b> — это отдельный верхний мир и отдельный ад, созданные специально
+        для добычи ресурсов. Копай, руби и фарми мобов сколько угодно, не боясь испортить ландшафт основного
+        мира и построек. Структуры, данжи и спавнеры генерируются как обычно — но лута в сундуках нет нигде,
+        чтобы ресурсы нельзя было бесконечно размножать.
+      </p>
+    </div>
+
+    <!-- Что внутри -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-bottom:32px;">
+      <div class="feature-card">
+        <div class="fc-title">🗺️ Два отдельных мира</div>
+        <div class="fc-item">Верхний мир ферм и ад ферм — только для добычи</div>
+        <div class="fc-item">Основной мир и постройки остаются нетронутыми</div>
+        <div class="fc-item">Порталы ферм-миров связаны между собой</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-title">🏰 Всё генерируется</div>
+        <div class="fc-item">Данжи, шахты, крепости и бастионы на месте</div>
+        <div class="fc-item">Спавнеры мобов работают как обычно</div>
+        <div class="fc-item">Руды, деревья и ресурсы — фарми без ограничений</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-title">🚫 Никакого дюпа</div>
+        <div class="fc-item">Лута в сундуках структур нет нигде</div>
+        <div class="fc-item">Никакого размножения ресурсов через фарм-миры</div>
+        <div class="fc-item">Порталов в Энд в мирах ферм не будет</div>
+      </div>
+    </div>
+
+    <!-- Как построить портал -->
+    <div style="text-align:center;margin-bottom:20px;">
+      <h3 style="font-size:1.3rem;font-weight:700;color:#c084fc;">🟪 Как попасть в мир ферм</h3>
+      <p style="color:#9d7dc8;font-size:0.88rem;margin-top:6px;">Собери свой собственный портал — прямо как в Незер, только особый</p>
+    </div>
+
+    <div class="steps" style="margin-bottom:28px;">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Построй рамку из плачущего обсидиана</div>
+          <div class="step-desc">Форма — как у портала в Незер (минимум 2×3 внутри, максимум 21×21). Только вместо обычного обсидиана используй <b style="color:#c4b5e8;">плачущий обсидиан</b>.</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Подожги рамку огнивом</div>
+          <div class="step-desc">Проём затянется фиолетовым стеклом, вокруг заиграют частицы — портал активирован.</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Шагни в портал</div>
+          <div class="step-desc">Касание переносит тебя в мир ферм <b style="color:#c4b5e8;">на те же координаты</b> — мгновенно, без ожидания.</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Возвращайся, когда захочешь</div>
+          <div class="step-desc">На той стороне <b style="color:#c4b5e8;">автоматически появится парный портал</b> — пройди через него и выйдешь в мире построек там, откуда пришёл. Парный портал всегда встаёт на поверхности, так что под землёй ты не окажешься.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Итоговые теги -->
+    <div class="card">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+        <span class="farm-tag">✅ Структуры и данжи</span>
+        <span class="farm-tag">✅ Спавнеры мобов</span>
+        <span class="farm-tag">✅ Все руды и ресурсы</span>
+        <span class="farm-tag no">❌ Лут в сундуках</span>
+        <span class="farm-tag no">❌ Порталы в Энд</span>
+      </div>
+      <p style="font-size:0.82rem;color:#6b4f8a;margin-top:16px;text-align:center;">
+        🌱 Фармь спокойно — основной мир и постройки останутся чистыми.
+      </p>
     </div>
   </section>
 
@@ -737,7 +966,9 @@
 <script>
   // ── COMMANDS DATA ──
   const mayorCmds = [
+    { cmd: '/city invite', args: '<ник>', role: 'mayor', desc: 'Пригласить игрока в свой город (он принимает приглашение сам)' },
     { cmd: '/city accept', args: '', role: 'mayor', desc: 'Просмотр и принятие запросов на вступление' },
+    { cmd: '/city coords', args: 'set <overworld|nether>', role: 'mayor', desc: 'Задать координаты города в верхнем мире или в аду' },
     { cmd: '/city kick', args: '<ник>', role: 'mayor', desc: 'Исключить игрока из города' },
     { cmd: '/city ban', args: '<ник> <причина>', role: 'mayor', desc: 'Запрет на въезд в город (причина обязательна)' },
     { cmd: '/city unban', args: '<ник>', role: 'mayor', desc: 'Снять запрет на въезд' },
@@ -759,8 +990,9 @@
 
   const playerCmds = [
     { cmd: '/city cities', args: '', role: 'all', desc: 'Список всех городов сервера с кнопками запроса' },
-    { cmd: '/city info', args: '[город]', role: 'all', desc: 'Информация о городе' },
-    { cmd: '/city invite', args: '<ник>', role: 'all', desc: 'Отправить запрос на вступление в город игрока' },
+    { cmd: '/city info', args: '[город]', role: 'all', desc: 'Информация о городе: координаты, чёрный список и др.' },
+    { cmd: '/city join', args: '<город>', role: 'all', desc: 'Отправить запрос на вступление в город' },
+    { cmd: '/city invites', args: '', role: 'all', desc: 'Приглашения в города, которые тебе прислали мэры' },
     { cmd: '/city online', args: '', role: 'all', desc: 'Кто из города онлайн' },
     { cmd: '/city count', args: '', role: 'all', desc: 'Сколько людей в городе' },
     { cmd: '/city list', args: '', role: 'all', desc: 'Список всех жителей с ролями' },
@@ -775,6 +1007,10 @@
     { cmd: '/passport removefield', args: '<ник> <поле>', role: 'all', desc: 'Удалить запись из паспорта' },
     { cmd: '/laws', args: '<город>', role: 'all', desc: 'Прочитать законы города (книга)' },
     { cmd: '/legends', args: '', role: 'all', desc: 'Открыть книгу легенд сервера' },
+    { cmd: '/grave list', args: '', role: 'all', desc: 'Список твоих активных могил с координатами' },
+    { cmd: '/grave trust', args: '<ник>', role: 'all', desc: 'Разрешить игроку забирать твои могилы' },
+    { cmd: '/grave untrust', args: '<ник>', role: 'all', desc: 'Отозвать доступ к своим могилам' },
+    { cmd: '/grave trusted', args: '', role: 'all', desc: 'Список доверенных лиц' },
     { cmd: '/diary', args: '', role: 'all', desc: 'Личный дневник путешествий' },
     { cmd: '/journal', args: '', role: 'all', desc: 'Итоги дня на сервере' },
     { cmd: '/journal history', args: '', role: 'all', desc: 'История журнала мира за последние дни' },
