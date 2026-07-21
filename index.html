@@ -88,6 +88,9 @@ body{
   box-shadow:inset 0 0 6px rgba(255,255,255,0.4)}
 .brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:-0.01em;color:#fff}
 .brand-name b{color:var(--amethyst-bright)}
+.brand-avatar{width:42px;height:42px;border-radius:11px;object-fit:cover;flex-shrink:0;
+  border:2px solid var(--line-bright);box-shadow:0 0 16px rgba(168,85,247,0.45);transition:.24s}
+.brand:hover .brand-avatar{box-shadow:0 0 22px rgba(168,85,247,0.7)}
 .brand-logo{height:52px;width:auto;display:block;
   filter:drop-shadow(0 2px 10px rgba(168,85,247,0.55));transition:.24s}
 .brand:hover .brand-logo{filter:drop-shadow(0 2px 16px rgba(168,85,247,0.85))}
@@ -347,8 +350,9 @@ section[id]{scroll-margin-top:92px}
 <header class="topbar">
   <div class="wrap topbar-inner">
     <a href="#top" class="brand">
-      <img src="logo-full.png" alt="QWorld" class="brand-logo"
-        onerror="this.outerHTML='<span class=&quot;brand-mark&quot;></span><span class=&quot;brand-name&quot;>Q<b>World</b></span>'" />
+      <img src="qwavatar.png" alt="QWorld" class="brand-avatar"
+        onerror="this.style.display='none'" />
+      <span class="brand-name">Q<b>World</b></span>
     </a>
     <nav class="nav" id="nav">
       <a href="#about">О сервере</a>
