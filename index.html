@@ -88,6 +88,9 @@ body{
   box-shadow:inset 0 0 6px rgba(255,255,255,0.4)}
 .brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:-0.01em;color:#fff}
 .brand-name b{color:var(--amethyst-bright)}
+.brand-logo{height:38px;width:auto;display:block;
+  filter:drop-shadow(0 2px 10px rgba(168,85,247,0.55));transition:.24s}
+.brand:hover .brand-logo{filter:drop-shadow(0 2px 16px rgba(168,85,247,0.85))}
 .topbar-cta{display:flex;gap:10px;align-items:center}
 
 /* nav links (scrollspy) */
@@ -340,8 +343,8 @@ section[id]{scroll-margin-top:84px}
 <header class="topbar">
   <div class="wrap topbar-inner">
     <a href="#top" class="brand">
-      <span class="brand-mark"></span>
-      <span class="brand-name">Q<b>World</b></span>
+      <img src="logo-full.png" alt="QWorld" class="brand-logo"
+        onerror="this.outerHTML='<span class=&quot;brand-mark&quot;></span><span class=&quot;brand-name&quot;>Q<b>World</b></span>'" />
     </a>
     <nav class="nav" id="nav">
       <a href="#about">О сервере</a>
@@ -667,11 +670,9 @@ section[id]{scroll-margin-top:84px}
   <div class="wrap">
     <div class="foot-grid">
       <div style="display:flex;align-items:center;gap:16px">
-        <div class="avatar"><img src="qwavatar.png" alt="QWorld" onerror="this.style.display='none';this.parentElement.textContent='QW'" /></div>
-        <div>
-          <div class="brand-name" style="font-size:1.3rem">Q<b>World</b></div>
-          <div style="font-size:0.82rem;color:var(--text-faint)">Minecraft SMP RP Server</div>
-        </div>
+        <img src="logo-full.png" alt="QWorld" style="height:46px;width:auto;filter:drop-shadow(0 2px 12px rgba(168,85,247,0.5))"
+          onerror="this.outerHTML='<div class=&quot;brand-name&quot; style=&quot;font-size:1.5rem&quot;>Q<b>World</b></div>'" />
+        <div style="font-size:0.82rem;color:var(--text-faint)">Minecraft SMP RP Server</div>
       </div>
       <div style="display:flex;gap:11px;flex-wrap:wrap">
         <a href="https://t.me/qworld_s" target="_blank" class="btn btn-tg btn-sm">
