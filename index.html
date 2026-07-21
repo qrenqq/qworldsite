@@ -1,1061 +1,843 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <title>QWorld — Minecraft SMP RP Server</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap');
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="favicon.png" />
+<title>QWorld — Minecraft SMP RP Server</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* обсидиан + аметист палитра */
+  --obsidian:#0b0713;
+  --obsidian-2:#120a22;
+  --panel:#160d2a;
+  --panel-2:#1c1236;
+  --amethyst:#a855f7;
+  --amethyst-bright:#c084fc;
+  --amethyst-deep:#7c3aed;
+  --violet-ink:#8b2fc9;
+  --gold:#f5b544;
+  --gold-deep:#d97706;
+  --green:#4ade80;
+  --red:#f87171;
+  --text:#ece7f7;
+  --text-dim:#a493c9;
+  --text-faint:#6f5f94;
+  --line:rgba(168,85,247,0.14);
+  --line-bright:rgba(168,85,247,0.4);
+}
 
-    :root {
-      --purple-deep: #1a0a2e;
-      --purple-dark: #2d1b4e;
-      --purple-mid: #4a2d7a;
-      --purple-bright: #8b2fc9;
-      --purple-accent: #a855f7;
-      --purple-light: #c084fc;
-      --purple-glow: #7c3aed;
-      --gold: #f59e0b;
-      --gold-light: #fbbf24;
-      --bg-card: #1e1035;
-      --bg-dark: #120820;
-    }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--obsidian);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  line-height:1.6;
+}
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--purple-deep);
-      color: #e2d9f3;
-      min-height: 100vh;
-      background-image:
-        radial-gradient(ellipse at 20% 20%, rgba(139,47,201,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 80%, rgba(76,29,149,0.22) 0%, transparent 60%),
-        radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.12) 0%, transparent 50%);
-    }
+/* ══ живой фон: дрейфующая аметистовая дымка + частицы ══ */
+.bg-field{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 10%, rgba(124,58,237,0.20), transparent 60%),
+    radial-gradient(ellipse 50% 60% at 85% 85%, rgba(139,47,201,0.18), transparent 60%),
+    radial-gradient(ellipse 80% 40% at 50% 50%, rgba(168,85,247,0.08), transparent 70%),
+    var(--obsidian);
+}
+.bg-grid{position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:0.5;
+  background-image:
+    linear-gradient(rgba(168,85,247,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,85,247,0.05) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 75%);
+}
+#particles{position:fixed;inset:0;z-index:-1;pointer-events:none}
 
-    /* ── HERO ── */
-    .hero {
-      background: linear-gradient(180deg, #0d0518 0%, #1a0a2e 40%, #2d1b4e 100%);
-      border-bottom: 2px solid rgba(168,85,247,0.3);
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b2fc9' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      opacity: 0.4;
-    }
-    .hero-mountains {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 80px;
-      background: linear-gradient(180deg, transparent 0%, rgba(26,10,46,0.8) 100%);
-    }
-    .hero-mountains::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 60px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60'%3E%3Cpolygon points='0,60 100,20 180,40 280,5 380,35 460,10 560,45 650,15 750,38 860,8 940,30 1050,12 1140,40 1200,20 1200,60' fill='rgba(45,27,78,0.6)'/%3E%3C/svg%3E") no-repeat bottom;
-      background-size: cover;
-    }
+/* ══ типографика ══ */
+.display{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-0.02em;line-height:1.05}
+.mono{font-family:'JetBrains Mono',monospace}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;font-weight:500;letter-spacing:0.32em;text-transform:uppercase;
+  color:var(--amethyst-bright);
+}
 
-    @keyframes glow-pulse {
-      0%, 100% { filter: drop-shadow(0 0 30px rgba(168,85,247,0.7)) drop-shadow(0 0 60px rgba(139,47,201,0.5)); }
-      50% { filter: drop-shadow(0 0 50px rgba(168,85,247,1)) drop-shadow(0 0 100px rgba(139,47,201,0.75)); }
-    }
-    .logo-img { animation: glow-pulse 3s ease-in-out infinite; }
+/* ══ shell ══ */
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-    }
-    .logo-float { animation: float 4s ease-in-out infinite; }
+/* ══ topbar ══ */
+.topbar{position:sticky;top:0;z-index:60;
+  backdrop-filter:blur(14px);
+  background:linear-gradient(180deg, rgba(11,7,19,0.9), rgba(11,7,19,0.55));
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none}
+.brand-mark{width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--amethyst),var(--amethyst-deep));
+  display:grid;place-items:center;box-shadow:0 0 18px rgba(168,85,247,0.5);
+  position:relative;overflow:hidden;
+}
+.brand-mark::after{content:'';position:absolute;inset:6px;border:2px solid rgba(255,255,255,0.85);border-radius:4px;
+  box-shadow:inset 0 0 6px rgba(255,255,255,0.4)}
+.brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:-0.01em;color:#fff}
+.brand-name b{color:var(--amethyst-bright)}
+.topbar-cta{display:flex;gap:10px;align-items:center}
 
-    /* ── BADGE ── */
-    .badge-dev {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(251,191,36,0.08));
-      border: 1px solid rgba(245,158,11,0.4);
-      border-radius: 50px;
-      padding: 10px 24px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--gold-light);
-      letter-spacing: 0.05em;
-      backdrop-filter: blur(8px);
-    }
-    .badge-dev::before { content: '🚀'; }
+/* nav links (scrollspy) */
+.nav{display:none;gap:4px;align-items:center}
+@media(min-width:960px){.nav{display:flex}}
+.nav a{font-size:0.85rem;font-weight:500;color:var(--text-dim);text-decoration:none;
+  padding:8px 14px;border-radius:8px;transition:.2s;position:relative}
+.nav a:hover{color:var(--text);background:rgba(168,85,247,0.1)}
+.nav a.on{color:#fff}
+.nav a.on::after{content:'';position:absolute;left:14px;right:14px;bottom:3px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,var(--amethyst),var(--amethyst-bright))}
 
-    /* ── BUTTONS ── */
-    .btn-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+/* ══ buttons ══ */
+.btn{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-weight:600;
+  border-radius:11px;transition:.24s cubic-bezier(.2,.7,.3,1);white-space:nowrap;cursor:pointer;border:none;
+  font-size:0.92rem;padding:12px 22px;letter-spacing:0.01em}
+.btn svg{width:18px;height:18px;flex-shrink:0}
+.btn-primary{background:linear-gradient(135deg,var(--amethyst),var(--amethyst-deep));color:#fff;
+  box-shadow:0 6px 22px rgba(124,58,237,0.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(124,58,237,0.55)}
+.btn-tg{background:linear-gradient(135deg,#2AABEE,#1c8fd1);color:#fff;box-shadow:0 6px 22px rgba(42,171,238,0.35)}
+.btn-tg:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(42,171,238,0.5)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#2a1608;box-shadow:0 6px 22px rgba(245,181,68,0.35)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(245,181,68,0.5)}
+.btn-ghost{background:rgba(168,85,247,0.1);border:1px solid var(--line-bright);color:var(--amethyst-bright)}
+.btn-ghost:hover{background:rgba(168,85,247,0.22);transform:translateY(-1px)}
+.btn-sm{padding:9px 18px;font-size:0.85rem}
 
-    .tg-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #2AABEE, #1e8fd1);
-      color: #fff;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 14px 32px;
-      border-radius: 50px;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(42,171,238,0.35);
-      letter-spacing: 0.03em;
-    }
-    .tg-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(42,171,238,0.55); }
-    .tg-btn svg { width: 22px; height: 22px; }
+/* ══ hero ══ */
+.hero{position:relative;padding:96px 0 70px;overflow:hidden}
+.hero-inner{display:grid;gap:48px;align-items:center;grid-template-columns:1fr}
+.portal-stage{order:2}
+.hero-copy{order:1}
+@media(min-width:900px){.hero-inner{grid-template-columns:1.05fr .95fr;gap:30px}
+  .portal-stage{order:0}.hero-copy{order:0}}
 
-    .form-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, var(--purple-bright), var(--purple-glow));
-      color: #fff;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 14px 32px;
-      border-radius: 50px;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(139,47,201,0.35);
-      letter-spacing: 0.03em;
-    }
-    .form-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,47,201,0.55); }
+.hero-copy{opacity:0;transform:translateY(20px);animation:rise .9s .1s forwards cubic-bezier(.2,.7,.3,1)}
+.hero h1{font-size:clamp(2.6rem,6vw,4.3rem);margin:18px 0 20px;color:#fff}
+.hero h1 .grad{background:linear-gradient(120deg,var(--amethyst-bright),var(--amethyst) 45%,var(--violet-ink));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p.lead{font-size:1.08rem;color:var(--text-dim);max-width:30em;margin-bottom:30px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:26px;margin-top:34px;flex-wrap:wrap}
+.stat .n{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;color:#fff;line-height:1}
+.stat .l{font-size:0.76rem;color:var(--text-faint);margin-top:5px;letter-spacing:0.03em}
+.stat{border-left:2px solid var(--line-bright);padding-left:14px}
 
-    .donate-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, var(--gold), #d97706);
-      color: #1a0a2e;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 14px 32px;
-      border-radius: 50px;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(245,158,11,0.35);
-      letter-spacing: 0.03em;
-    }
-    .donate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.55); }
+@keyframes rise{to{opacity:1;transform:none}}
 
-    .dl-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(168,85,247,0.15);
-      border: 1px solid rgba(168,85,247,0.4);
-      color: #c084fc;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 11px 24px;
-      border-radius: 50px;
-      text-decoration: none;
-      transition: all 0.25s ease;
-    }
-    .dl-btn:hover { background: rgba(168,85,247,0.3); border-color: #a855f7; transform: translateY(-1px); }
+/* ══ hero portal (signature) ══ */
+.portal-stage{position:relative;display:grid;place-items:center;min-height:400px;
+  opacity:0;transform:scale(.9);animation:rise .9s .35s forwards cubic-bezier(.2,.7,.3,1)}
+.portal-frame{position:relative;width:230px;height:320px}
+.portal-obsidian{position:absolute;inset:0;border-radius:14px;
+  background:
+    repeating-linear-gradient(48deg, #1a0f2e 0 6px, #241338 6px 12px),
+    radial-gradient(circle at 30% 20%, rgba(168,85,247,0.4), transparent 40%);
+  border:3px solid #0d0619;
+  box-shadow:0 0 0 2px rgba(168,85,247,0.15), 0 24px 60px rgba(0,0,0,0.6);
+  -webkit-mask:
+     linear-gradient(#000 0 0) padding-box,
+     linear-gradient(#000 0 0);
+}
+/* obsidian speckle */
+.speck{position:absolute;width:9px;height:9px;background:var(--amethyst);opacity:.55;border-radius:1px}
+.portal-inner{position:absolute;inset:34px;border-radius:6px;overflow:hidden;
+  background:linear-gradient(160deg, rgba(124,58,237,0.55), rgba(139,47,201,0.35) 50%, rgba(192,132,252,0.5));
+  box-shadow:inset 0 0 40px rgba(192,132,252,0.5), 0 0 50px rgba(124,58,237,0.6);
+  animation:portalPulse 3s ease-in-out infinite;
+}
+@keyframes portalPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+.portal-inner::before,.portal-inner::after{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(115deg, transparent 0 8px, rgba(255,255,255,0.06) 8px 9px)}
+.portal-inner::after{animation:swirl 8s linear infinite;background:
+  radial-gradient(circle at 50% 120%, rgba(255,255,255,0.25), transparent 45%)}
+@keyframes swirl{to{transform:translateY(-14%)}}
+.pparticle{position:absolute;width:5px;height:5px;border-radius:1px;background:#f0c8ff;
+  box-shadow:0 0 8px #e9a5ff;bottom:-6px}
+.portal-glow{position:absolute;inset:-40px;z-index:-1;border-radius:50%;
+  background:radial-gradient(circle,rgba(124,58,237,0.4),transparent 62%);
+  animation:portalPulse 3s ease-in-out infinite}
+/* floating blocks around portal */
+.float-block{position:absolute;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,.4);}
+.fb1{width:38px;height:38px;top:6%;right:2%;background:linear-gradient(135deg,#4a2d7a,#2d1b4e);
+  animation:bob 5s ease-in-out infinite}
+.fb2{width:26px;height:26px;bottom:12%;left:0;background:linear-gradient(135deg,#7c3aed,#4a2d7a);
+  animation:bob 6s ease-in-out .6s infinite}
+.fb3{width:20px;height:20px;top:44%;right:-4%;background:linear-gradient(135deg,var(--gold),var(--gold-deep));
+  animation:bob 4.4s ease-in-out .3s infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
 
-    .backup-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(245,158,11,0.1);
-      border: 1.5px solid rgba(245,158,11,0.4);
-      color: #fbbf24;
-      font-weight: 700;
-      font-size: 0.88rem;
-      padding: 10px 22px;
-      border-radius: 50px;
-      text-decoration: none;
-      transition: all 0.25s ease;
-    }
-    .backup-btn:hover { background: rgba(245,158,11,0.25); border-color: #f59e0b; transform: translateY(-1px); }
+/* ══ section rhythm ══ */
+section[id]{scroll-margin-top:84px}
+.sec{padding:74px 0}
+.sec-head{max-width:38em;margin-bottom:40px}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+.sec-head h2{font-size:clamp(1.9rem,4vw,2.7rem);color:#fff;margin:12px 0 10px}
+.sec-head p{color:var(--text-dim);font-size:1.03rem}
 
-    /* ── SECTION TITLES ── */
-    .section-title {
-      font-size: 2rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #c084fc, #a855f7, #8b2fc9);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .section-subtitle { color: #9d7dc8; font-size: 1.05rem; margin-top: 6px; }
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
 
-    /* ── CARDS ── */
-    .card {
-      background: linear-gradient(135deg, rgba(45,27,78,0.8), rgba(30,16,53,0.9));
-      border: 1px solid rgba(168,85,247,0.2);
-      border-radius: 16px;
-      padding: 24px;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-    }
-    .card:hover {
-      border-color: rgba(168,85,247,0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(139,47,201,0.2);
-    }
+/* ══ cards ══ */
+.grid{display:grid;gap:18px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
 
-    .feature-card {
-      background: linear-gradient(135deg, rgba(45,27,78,0.7), rgba(30,16,53,0.85));
-      border: 1px solid rgba(168,85,247,0.18);
-      border-radius: 14px;
-      padding: 22px;
-      transition: all 0.3s ease;
-    }
-    .feature-card:hover {
-      border-color: rgba(168,85,247,0.4);
-      box-shadow: 0 6px 24px rgba(139,47,201,0.18);
-      transform: translateY(-2px);
-    }
-    .feature-card .fc-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #c084fc;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(168,85,247,0.2);
-    }
-    .feature-card .fc-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-size: 0.875rem;
-      color: #c4b5e8;
-      padding: 4px 0;
-      line-height: 1.5;
-    }
-    .feature-card .fc-item::before {
-      content: '▸';
-      color: #a855f7;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+.card{position:relative;border-radius:16px;padding:24px;
+  background:linear-gradient(160deg, var(--panel), var(--obsidian-2));
+  border:1px solid var(--line);overflow:hidden;transition:.32s cubic-bezier(.2,.7,.3,1)}
+.card::before{content:'';position:absolute;inset:0;border-radius:16px;padding:1px;
+  background:linear-gradient(140deg,rgba(168,85,247,0.5),transparent 40%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:.32s}
+.card:hover{transform:translateY(-4px);border-color:var(--line-bright);
+  box-shadow:0 18px 44px rgba(124,58,237,0.22)}
+.card:hover::before{opacity:1}
+.card-ico{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:1.4rem;
+  margin-bottom:16px;background:rgba(168,85,247,0.12);border:1px solid var(--line-bright)}
+.card h3{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;color:#fff;margin-bottom:12px;font-weight:600}
+.card ul{list-style:none;display:grid;gap:9px}
+.card li{display:flex;gap:9px;font-size:0.9rem;color:var(--text-dim);line-height:1.5}
+.card li::before{content:'';flex-shrink:0;width:6px;height:6px;margin-top:7px;border-radius:1px;
+  background:var(--amethyst);box-shadow:0 0 6px var(--amethyst)}
 
-    /* ── SITE TABS (main nav) ── */
-    html { scroll-behavior: smooth; }
-    .site-nav {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 48px;
-      position: sticky;
-      top: 16px;
-      z-index: 20;
-    }
-    .site-nav-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 22px;
-      border-radius: 50px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      cursor: pointer;
-      color: #c084fc;
-      background: rgba(30,16,53,0.9);
-      border: 1px solid rgba(168,85,247,0.3);
-      backdrop-filter: blur(8px);
-      transition: all 0.25s ease;
-      user-select: none;
-    }
-    .site-nav-link:hover { border-color: #a855f7; background: rgba(45,27,78,0.9); transform: translateY(-1px); }
-    .site-nav-link.active {
-      background: linear-gradient(135deg, var(--purple-bright), var(--purple-glow));
-      color: #fff;
-      border-color: transparent;
-    }
+/* ══ FARM WORLD feature (signature section) ══ */
+.farm-hero{position:relative;border-radius:24px;overflow:hidden;padding:52px 34px;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.35), transparent 55%),
+    linear-gradient(150deg, var(--panel-2), var(--obsidian));
+  border:1px solid var(--line-bright)}
+.farm-hero::after{content:'';position:absolute;inset:0;opacity:.4;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='14' height='14' fill='%23a855f7' fill-opacity='0.04'/%3E%3Crect x='16' y='16' width='14' height='14' fill='%23a855f7' fill-opacity='0.04'/%3E%3C/svg%3E")}
+.farm-grid{display:grid;gap:34px;grid-template-columns:1fr;align-items:center;position:relative;z-index:1}
+@media(min-width:820px){.farm-grid{grid-template-columns:1fr 260px}}
 
-    .tab-section { display: none; }
-    .tab-section.active { display: block; animation: fadein 0.35s ease; }
-    @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.newtag{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;
+  font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--green);background:rgba(74,222,128,0.12);border:1px solid rgba(74,222,128,0.4);
+  padding:5px 13px;border-radius:50px}
 
-    /* ── COMMANDS ── */
-    .cmd-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-    .cmd-tab {
-      padding: 8px 20px;
-      border-radius: 50px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.25s ease;
-      user-select: none;
-    }
-    .cmd-tab.all { background: rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.3); color: #c084fc; }
-    .cmd-tab.all.active, .cmd-tab.all:hover { background: rgba(168,85,247,0.35); border-color: #a855f7; }
-    .cmd-tab.mayor { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); color: #fbbf24; }
-    .cmd-tab.mayor.active, .cmd-tab.mayor:hover { background: rgba(245,158,11,0.25); border-color: #f59e0b; }
+/* mini portal for farm section */
+.mini-portal{position:relative;width:170px;height:236px;margin:0 auto}
+.mini-portal .mp-frame{position:absolute;inset:0;border-radius:12px;
+  background:repeating-linear-gradient(48deg,#1a0f2e 0 5px,#241338 5px 10px);
+  border:3px solid #0d0619;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.mini-portal .mp-inner{position:absolute;inset:26px;border-radius:5px;
+  background:linear-gradient(160deg,rgba(124,58,237,0.6),rgba(192,132,252,0.5));
+  box-shadow:inset 0 0 30px rgba(192,132,252,0.6),0 0 40px rgba(124,58,237,0.5);
+  animation:portalPulse 3s ease-in-out infinite;overflow:hidden}
+.mini-portal .mp-inner::after{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(115deg,transparent 0 7px,rgba(255,255,255,0.07) 7px 8px)}
 
-    .cmd-group-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #c084fc;
-      padding: 16px 0 12px;
-      border-bottom: 2px solid rgba(168,85,247,0.2);
-      margin-bottom: 8px;
-    }
+/* steps */
+.steps{display:grid;gap:14px;counter-reset:step}
+.step{display:flex;gap:18px;align-items:flex-start;padding:18px 20px;border-radius:14px;
+  background:linear-gradient(160deg,var(--panel),var(--obsidian-2));
+  border:1px solid var(--line);transition:.28s cubic-bezier(.2,.7,.3,1)}
+.step:hover{transform:translateX(5px);border-color:var(--line-bright);
+  box-shadow:0 10px 30px rgba(124,58,237,0.18)}
+.step-n{counter-increment:step;flex-shrink:0;width:38px;height:38px;border-radius:11px;
+  display:grid;place-items:center;font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--amethyst),var(--amethyst-deep));
+  box-shadow:0 5px 16px rgba(124,58,237,0.45)}
+.step-n::before{content:counter(step)}
+.step-b h4{font-family:'Space Grotesk',sans-serif;font-size:1.02rem;color:#fff;margin-bottom:4px;font-weight:600}
+.step-b p{font-size:0.9rem;color:var(--text-dim)}
+.step-b code{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--amethyst-bright);
+  background:rgba(168,85,247,0.14);border:1px solid var(--line);padding:1px 7px;border-radius:6px}
 
-    .cmd-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: start;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      border: 1px solid rgba(168,85,247,0.1);
-      background: rgba(18,8,32,0.5);
-      margin-bottom: 8px;
-      transition: all 0.2s ease;
-    }
-    .cmd-row:hover { border-color: rgba(168,85,247,0.3); background: rgba(45,27,78,0.5); }
-    .cmd-code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      color: #a855f7;
-      font-weight: 600;
-      word-break: break-all;
-    }
-    .cmd-code .arg { color: #c4b5e8; font-weight: 400; }
-    .cmd-desc { font-size: 0.82rem; color: #9d7dc8; margin-top: 4px; }
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:0.84rem;font-weight:600;
+  padding:8px 16px;border-radius:50px;
+  background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.32);color:#86efac}
+.chip.no{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.32);color:#fca5a5}
 
-    .role-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 50px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      white-space: nowrap;
-      letter-spacing: 0.04em;
-      flex-shrink: 0;
-    }
-    .role-mayor { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); color: #fbbf24; }
-    .role-player { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
-    .role-all { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); color: #c084fc; }
+/* ══ commands ══ */
+.cmd-switch{display:inline-flex;gap:6px;padding:5px;border-radius:12px;
+  background:var(--obsidian-2);border:1px solid var(--line);margin-bottom:22px}
+.cmd-switch button{font-family:inherit;font-size:0.86rem;font-weight:600;cursor:pointer;
+  padding:9px 20px;border-radius:8px;border:none;background:transparent;color:var(--text-dim);transition:.2s}
+.cmd-switch button.on{background:linear-gradient(135deg,var(--amethyst),var(--amethyst-deep));color:#fff}
+.cmd-switch button.gold.on{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#2a1608}
 
-    /* ── EXTRA FEATURES GRID ── */
-    .extra-feat {
-      background: rgba(45,27,78,0.5);
-      border: 1px solid rgba(168,85,247,0.15);
-      border-radius: 12px;
-      padding: 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .extra-feat .ef-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-    .extra-feat .ef-title { font-size: 0.875rem; font-weight: 600; color: #c084fc; margin-bottom: 2px; }
-    .extra-feat .ef-desc { font-size: 0.8rem; color: #9d7dc8; }
+.cmd-list{display:grid;gap:9px}
+.cmd{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+  padding:14px 18px;border-radius:12px;background:rgba(18,10,34,0.6);
+  border:1px solid var(--line);transition:.22s}
+.cmd:hover{border-color:var(--line-bright);background:rgba(28,18,54,0.7);transform:translateX(3px)}
+.cmd-code{font-family:'JetBrains Mono',monospace;font-size:0.9rem;color:var(--amethyst);font-weight:600;word-break:break-word}
+.cmd-code .arg{color:var(--text-dim);font-weight:400}
+.cmd-desc{font-size:0.82rem;color:var(--text-faint);margin-top:4px}
+.role{font-size:0.68rem;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:0.05em;
+  padding:4px 11px;border-radius:50px;white-space:nowrap;flex-shrink:0}
+.role.all{background:rgba(168,85,247,0.14);border:1px solid var(--line-bright);color:var(--amethyst-bright)}
+.role.mayor{background:rgba(245,181,68,0.13);border:1px solid rgba(245,181,68,0.35);color:var(--gold)}
+.role.admin{background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.35);color:var(--red)}
 
-    /* ── RULES ── */
-    .rule-row {
-      display: flex;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      border: 1px solid rgba(168,85,247,0.1);
-      background: rgba(18,8,32,0.5);
-      margin-bottom: 8px;
-    }
-    .rule-num {
-      flex-shrink: 0;
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: rgba(168,85,247,0.2);
-      color: #c084fc;
-      font-weight: 700;
-      font-size: 0.8rem;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .rule-text { font-size: 0.9rem; color: #c4b5e8; line-height: 1.6; }
-    .rule-text b { color: #e2d9f3; }
+/* ══ generic ══ */
+.tile{border-radius:16px;padding:26px;text-align:center;
+  background:linear-gradient(160deg,var(--panel),var(--obsidian-2));border:1px solid var(--line);transition:.3s}
+.tile:hover{transform:translateY(-4px);border-color:var(--line-bright);box-shadow:0 16px 40px rgba(124,58,237,0.2)}
+.tile .emoji{font-size:2rem;margin-bottom:10px}
+.tile h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;color:var(--amethyst-bright);margin-bottom:8px}
+.tile p{font-size:0.86rem;color:var(--text-dim);margin-bottom:16px}
+.tile .dl{display:flex;flex-direction:column;gap:9px;align-items:center}
 
-    .ban-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(248,113,113,0.12);
-      border: 1px solid rgba(248,113,113,0.35);
-      color: #f87171;
-      font-size: 0.82rem;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 50px;
-    }
+.rule{display:flex;gap:15px;padding:16px 18px;border-radius:12px;margin-bottom:9px;
+  background:rgba(18,10,34,0.55);border:1px solid var(--line)}
+.rule-n{flex-shrink:0;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.85rem;
+  background:rgba(168,85,247,0.16);color:var(--amethyst-bright)}
+.rule p{font-size:0.9rem;color:var(--text-dim)}
+.rule p b{color:var(--text)}
 
-    /* ── DIVIDER ── */
-    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), transparent); margin: 48px 0; }
+.bantags{display:flex;flex-wrap:wrap;gap:9px;justify-content:center}
+.bantag{font-size:0.82rem;font-weight:600;padding:7px 15px;border-radius:50px;
+  background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.32);color:#fca5a5}
 
-    /* ── AVATAR ── */
-    .avatar-wrap {
-      width: 90px; height: 90px;
-      border-radius: 50%;
-      border: 3px solid rgba(168,85,247,0.5);
-      overflow: hidden;
-      background: rgba(45,27,78,0.5);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-placeholder { font-size: 2rem; color: #6b4f8a; }
+.notice{border-radius:12px;padding:14px 18px;font-size:0.85rem;
+  background:rgba(245,181,68,0.09);border:1px solid rgba(245,181,68,0.3);color:var(--gold)}
 
-    .img-fallback { display: none; font-size: 0.8rem; color: #6b4f8a; margin-bottom: 14px; }
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--line-bright),transparent);margin:8px 0}
 
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #0d0518; }
-    ::-webkit-scrollbar-thumb { background: #4a2d7a; border-radius: 3px; }
+/* footer */
+.footer{padding:56px 0 40px;border-top:1px solid var(--line);margin-top:40px}
+.foot-grid{display:flex;flex-wrap:wrap;gap:30px;justify-content:space-between;align-items:center}
+.avatar{width:78px;height:78px;border-radius:20px;overflow:hidden;flex-shrink:0;
+  border:2px solid var(--line-bright);background:var(--panel);display:grid;place-items:center;color:var(--text-faint);font-size:0.7rem}
+.avatar img{width:100%;height:100%;object-fit:cover}
 
-    /* ── FARM WORLD ── */
-    .new-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(74,222,128,0.1));
-      border: 1px solid rgba(74,222,128,0.45);
-      color: #4ade80;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      padding: 5px 14px;
-      border-radius: 50px;
-      text-transform: uppercase;
-    }
-
-    /* Портал-визуал (SVG-рамка с "плёнкой") */
-    .portal-hero {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 36px;
-    }
-    @keyframes portal-shimmer {
-      0%, 100% { opacity: 0.75; }
-      50% { opacity: 1; }
-    }
-    @keyframes portal-particle {
-      0%   { transform: translateY(6px); opacity: 0; }
-      20%  { opacity: 1; }
-      80%  { opacity: 1; }
-      100% { transform: translateY(-42px); opacity: 0; }
-    }
-    .portal-svg { width: 220px; height: auto; filter: drop-shadow(0 0 24px rgba(168,85,247,0.55)); }
-    .portal-svg .film { animation: portal-shimmer 2.6s ease-in-out infinite; }
-    .portal-svg .pp { animation: portal-particle 3s ease-in-out infinite; }
-    .portal-svg .pp:nth-child(2) { animation-delay: 0.6s; }
-    .portal-svg .pp:nth-child(3) { animation-delay: 1.2s; }
-    .portal-svg .pp:nth-child(4) { animation-delay: 1.8s; }
-    .portal-svg .pp:nth-child(5) { animation-delay: 2.4s; }
-
-    /* Шаги «как построить портал» */
-    .steps { display: grid; gap: 14px; }
-    .step-row {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      background: rgba(18,8,32,0.55);
-      border: 1px solid rgba(168,85,247,0.15);
-      border-radius: 12px;
-      padding: 16px 18px;
-      transition: all 0.25s ease;
-    }
-    .step-row:hover { border-color: rgba(168,85,247,0.4); background: rgba(45,27,78,0.5); transform: translateX(3px); }
-    .step-num {
-      flex-shrink: 0;
-      width: 34px; height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--purple-bright), var(--purple-glow));
-      color: #fff;
-      font-weight: 800;
-      font-size: 1rem;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 3px 12px rgba(139,47,201,0.4);
-    }
-    .step-body .step-title { font-size: 0.98rem; font-weight: 700; color: #e2d9f3; margin-bottom: 3px; }
-    .step-body .step-desc { font-size: 0.85rem; color: #9d7dc8; line-height: 1.55; }
-    .step-body code {
-      font-family: 'JetBrains Mono', monospace;
-      background: rgba(168,85,247,0.15);
-      border: 1px solid rgba(168,85,247,0.25);
-      color: #c084fc;
-      padding: 1px 7px;
-      border-radius: 6px;
-      font-size: 0.82rem;
-    }
-
-    .farm-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      background: rgba(34,197,94,0.1);
-      border: 1px solid rgba(34,197,94,0.3);
-      color: #86efac;
-      font-size: 0.82rem;
-      font-weight: 600;
-      padding: 7px 15px;
-      border-radius: 50px;
-    }
-    .farm-tag.no { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: #fca5a5; }
-  </style>
+/* scrollbar + a11y */
+::-webkit-scrollbar{width:7px}
+::-webkit-scrollbar-track{background:var(--obsidian)}
+::-webkit-scrollbar-thumb{background:var(--amethyst-deep);border-radius:4px}
+:focus-visible{outline:2px solid var(--amethyst-bright);outline-offset:2px;border-radius:4px}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
 </head>
 <body>
+<div class="bg-field"></div>
+<div class="bg-grid"></div>
+<canvas id="particles"></canvas>
 
-<!-- ═══════════════════════════════════════════════
-     HERO SECTION
-═══════════════════════════════════════════════ -->
-<section class="hero">
-  <div class="hero-mountains"></div>
-  <div style="position:relative;z-index:1;padding:80px 24px 100px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px;">
+<!-- ═══ TOPBAR ═══ -->
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">Q<b>World</b></span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#about">О сервере</a>
+      <a href="#plugin">Плагин</a>
+      <a href="#farm">Мир ферм</a>
+      <a href="#commands">Команды</a>
+      <a href="#crafts">Крафты</a>
+      <a href="#resources">Ресурсы</a>
+      <a href="#rules">Правила</a>
+    </nav>
+    <div class="topbar-cta">
+      <a href="https://forms.gle/5PJmwMQtMq1hVzuc6" target="_blank" class="btn btn-primary btn-sm">Подать заявку</a>
+    </div>
+  </div>
+</header>
 
-    <div class="logo-float" style="display:flex;flex-direction:column;align-items:center;gap:20px;margin-top:16px;">
-      <img src="logo-full.png" alt="QWorld" class="logo-img" style="max-width:380px;width:100%;height:auto;" />
+<!-- ═══ HERO ═══ -->
+<section class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow">Minecraft · SMP · RP</span>
+      <h1 class="display">Мир, который <span class="grad">помнит</span> твои поступки</h1>
+      <p class="lead">Основывай города со своими законами, зарабатывай репутацию, попадай в книгу легенд. QWorld — сервер на собственном плагине, где история пишется тем, что ты делаешь.</p>
+      <div class="hero-cta">
+        <a href="https://forms.gle/5PJmwMQtMq1hVzuc6" target="_blank" class="btn btn-primary">📋 Подать заявку на сервер</a>
+        <a href="https://t.me/qworld_s" target="_blank" class="btn btn-tg">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Телеграм
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="n">RP</div><div class="l">ролевой уклон</div></div>
+        <div class="stat"><div class="n">Java + Bedrock</div><div class="l">ПК и телефон</div></div>
+        <div class="stat"><div class="n">1.0</div><div class="l">свой плагин</div></div>
+      </div>
     </div>
 
-    <div class="badge-dev">Открытый бета-тест уже идёт</div>
-
-    <p style="max-width:600px;color:#c4b5e8;line-height:1.7;font-size:1.02rem;">
-      Minecraft SMP RP сервер, где мир вокруг живёт своей жизнью: города со своими законами,
-      репутация, книга легенд и оружие, которое помнит свою историю.
-    </p>
-
-    <div class="btn-row">
-      <a href="https://t.me/qworld_s" target="_blank" class="tg-btn">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-        </svg>
-        Телеграм — t.me/qworld_s
-      </a>
-      <a href="https://forms.gle/5PJmwMQtMq1hVzuc6" target="_blank" class="form-btn">
-        📋 Подать заявку на сервер
-      </a>
-      <a href="https://www.donationalerts.com/r/qworldsmprp" target="_blank" class="donate-btn">
-        💜 Поддержать сервер
-      </a>
+    <div class="portal-stage">
+      <div class="portal-frame">
+        <div class="portal-glow"></div>
+        <div class="portal-obsidian"></div>
+        <div class="portal-inner" id="hero-portal"></div>
+        <span class="float-block fb1"></span>
+        <span class="float-block fb2"></span>
+        <span class="float-block fb3"></span>
+      </div>
     </div>
-
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════
-     MAIN CONTENT
-═══════════════════════════════════════════════ -->
-<main style="max-width:1100px;margin:0 auto;padding:60px 20px 80px;">
-
-  <!-- ─── MAIN NAV ─── -->
-  <nav class="site-nav">
-    <div class="site-nav-link active" onclick="switchSection('home', this)">🏠 Главная</div>
-    <div class="site-nav-link" onclick="switchSection('plugin', this)">🧩 Плагин QWorld</div>
-    <div class="site-nav-link" onclick="switchSection('farmworld', this)">🌾 Мир ферм</div>
-    <div class="site-nav-link" onclick="switchSection('commands', this)">⌨️ Команды</div>
-    <div class="site-nav-link" onclick="switchSection('crafts', this)">🛠️ Крафты</div>
-    <div class="site-nav-link" onclick="switchSection('resources', this)">📦 Ресурсы и моды</div>
-    <div class="site-nav-link" onclick="switchSection('rules', this)">📜 Правила</div>
-  </nav>
-
-  <!-- ═══════════════════════════════════════════════
-       ГЛАВНАЯ
-  ═══════════════════════════════════════════════ -->
-  <section id="tab-home" class="tab-section active">
-    <div style="text-align:center;margin-bottom:40px;">
-      <h2 class="section-title">Добро пожаловать в QWorld</h2>
-      <p class="section-subtitle">SMP-сервер с RP-уклоном на кастомном плагине</p>
+<!-- ═══ ABOUT ═══ -->
+<section class="sec" id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">О сервере</span>
+      <h2 class="display">Выживание с историей</h2>
+      <p>Здесь важно не только строить, но и жить в мире со своей памятью. Играй — а сервер сам запишет, что ты сделал: первый город, первый убитый дракон, самое легендарное оружие.</p>
     </div>
-
-    <div class="card" style="margin-bottom:32px;">
-      <p style="color:#c4b5e8;line-height:1.8;font-size:0.95rem;">
-        QWorld — это выживание с ролевым уклоном, где важно не только строить, но и жить в мире
-        со своей историей. Основывай города вместе с друзьями, пиши для них законы, зарабатывай
-        репутацию своими поступками, а сервер сам будет вести журнал событий и книгу легенд —
-        первый убитый Эндер-дракон, первый построенный город, самое легендарное оружие.
-        Всё это работает без единой лишней команды — просто играй, а мир запомнит, что ты сделал.
-      </p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-bottom:32px;">
-      <div class="feature-card">
-        <div class="fc-title">🏙️ Города и репутация</div>
-        <div class="fc-item">Создавай город, назначай зам-мэра, пиши свою конституцию</div>
-        <div class="fc-item">Закрывай город или отдельные районы, веди белый список</div>
-        <div class="fc-item">Зарабатывай и теряй репутацию — свою и своего города</div>
+    <div class="grid g3">
+      <div class="card reveal">
+        <div class="card-ico">🏙️</div>
+        <h3>Города и репутация</h3>
+        <ul>
+          <li>Создавай город, назначай зам-мэра, пиши конституцию</li>
+          <li>Закрывай город или отдельные районы, веди белый список</li>
+          <li>Зарабатывай и теряй репутацию — свою и города</li>
+        </ul>
       </div>
-      <div class="feature-card">
-        <div class="fc-title">📖 Живой мир</div>
-        <div class="fc-item">Книга легенд сервера — уникальные достижения игроков</div>
-        <div class="fc-item">Личный дневник путешествий у каждого игрока</div>
-        <div class="fc-item">Оружие и инструменты, которые помнят свою историю</div>
+      <div class="card reveal">
+        <div class="card-ico">📖</div>
+        <h3>Живой мир</h3>
+        <ul>
+          <li>Книга легенд сервера — уникальные достижения</li>
+          <li>Личный дневник путешествий у каждого игрока</li>
+          <li>Оружие и инструменты, что помнят свою историю</li>
+        </ul>
       </div>
-      <div class="feature-card">
-        <div class="fc-title">🎮 Открытый бета-тест</div>
-        <div class="fc-item">Сервер уже открыт для всех, кто подал заявку</div>
-        <div class="fc-item">Активные тестеры получают титул «Бета-Тестер»</div>
-        <div class="fc-item">Обладатели титула первыми попадают на все будущие тесты</div>
+      <div class="card reveal">
+        <div class="card-ico">🎮</div>
+        <h3>Открытый бета-тест</h3>
+        <ul>
+          <li>Сервер уже открыт для всех, кто подал заявку</li>
+          <li>Активные тестеры получают титул «Бета-Тестер»</li>
+          <li>Обладатели титула первыми попадают на все тесты</li>
+        </ul>
       </div>
     </div>
-
-    <div style="text-align:center;">
-      <a href="https://forms.gle/5PJmwMQtMq1hVzuc6" target="_blank" class="form-btn">📋 Подать заявку на сервер</a>
+    <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap" class="reveal">
+      <a href="https://forms.gle/5PJmwMQtMq1hVzuc6" target="_blank" class="btn btn-primary">📋 Подать заявку</a>
+      <button onclick="toggleMap()" class="btn btn-ghost">🗺️ Карта сервера (BlueMap)</button>
     </div>
+    <p id="map-notice" style="display:none;margin-top:14px" class="notice">⚠️ Карта недоступна до конца вайпа — в последнюю неделю вайпа она будет открыта!</p>
+  </div>
+</section>
 
-    <div style="text-align:center;margin-top:36px;">
-      <button onclick="toggleMapNotice()" class="dl-btn" style="cursor:pointer;font-size:0.95rem;border:none;">
-        🗺️ Интерактивная карта сервера (BlueMap)
-      </button>
-      <p id="map-notice" style="display:none;margin-top:14px;color:#fbbf24;font-size:0.85rem;max-width:420px;margin-left:auto;margin-right:auto;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px 18px;">
-        ⚠️ Карта не доступна до конца вайпа, в последнюю неделю вайпа она будет достпуной!
-      </p>
+<!-- ═══ PLUGIN ═══ -->
+<section class="sec" id="plugin">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Плагин QWorld</span>
+      <h2 class="display">Собственная разработка</h2>
+      <p>Самописный плагин под нужды сервера: города, паспорта, репутация, книга легенд, дневник, предметы с историей, система могил и миры ферм. Всё это — без единой лишней команды.</p>
     </div>
-  </section>
+    <div class="grid g3">
+      <div class="card reveal"><div class="card-ico">🏙️</div><h3>Города</h3><ul>
+        <li>Мэр, зам-мэр, прописка и белый список</li>
+        <li>Закрытие города целиком или отдельных зон</li>
+        <li>Своя конституция — законы, видимые всем</li></ul></div>
+      <div class="card reveal"><div class="card-ico">🪪</div><h3>Паспорта</h3><ul>
+        <li>Личная карточка игрока с кастомными полями</li>
+        <li>Можно показать паспорт другому игроку</li>
+        <li>Сравнение паспортов между игроками</li></ul></div>
+      <div class="card reveal"><div class="card-ico">⭐</div><h3>Репутация</h3><ul>
+        <li>+1 / −1 игроку или городу раз в 24 часа</li>
+        <li>Топ-5 игроков и топ-5 городов</li>
+        <li>Высокая репутация — запись в книгу легенд</li></ul></div>
+      <div class="card reveal"><div class="card-ico">🏆</div><h3>Книга легенд</h3><ul>
+        <li>Первый город, первый убитый Эндер-дракон</li>
+        <li>Легендарные предметы с историей</li>
+        <li>Уникальные для всего сервера события</li></ul></div>
+      <div class="card reveal"><div class="card-ico">⚰️</div><h3>Система могил</h3><ul>
+        <li>На месте смерти — могила с твоей головой</li>
+        <li>Над ней: кто, когда и как погиб</li>
+        <li>Броня и опыт возвращаются одним кликом</li></ul></div>
+      <div class="card reveal"><div class="card-ico">⚔️</div><h3>Живые предметы</h3><ul>
+        <li>Оружие считает убийства прямо в лоре</li>
+        <li>Кирка помнит блоки, топор — деревья</li>
+        <li>Оповещение всем при поломке предмета</li></ul></div>
+    </div>
+    <div style="margin-top:26px" class="reveal">
+      <a href="https://qrenqq.github.io/qworldpatchnote/" target="_blank" class="btn btn-ghost">📦 Все патчноуты плагина</a>
+    </div>
+  </div>
+</section>
 
-  <!-- ═══════════════════════════════════════════════
-       ПЛАГИН QWORLD
-  ═══════════════════════════════════════════════ -->
-  <section id="tab-plugin" class="tab-section">
-    <div style="text-align:center;margin-bottom:40px;">
-      <h2 class="section-title">Плагин QWorld</h2>
-      <p class="section-subtitle">Собственная разработка под нужды сервера</p>
-    </div>
-
-    <div class="card" style="margin-bottom:32px;">
-      <p style="color:#c4b5e8;line-height:1.8;font-size:0.95rem;">
-        QWorld — это самописный плагин, который добавляет на сервер систему городов с прописками
-        и законами, паспорта игроков, репутацию, книгу легенд, личный дневник путешествий,
-        предметы с историей и ежедневный журнал мира. Плагин активно развивается — все обновления
-        подробно описаны в патчноутах на отдельном сайте.
-      </p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:32px;">
-      <div class="feature-card">
-        <div class="fc-title">🏙️ Города</div>
-        <div class="fc-item">Мэр, зам-мэр, прописка и белый список жителей</div>
-        <div class="fc-item">Закрытие города целиком или отдельных зон</div>
-        <div class="fc-item">Своя конституция — законы, которые видят все игроки</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">📖 Паспорта</div>
-        <div class="fc-item">Личная карточка игрока с кастомными полями</div>
-        <div class="fc-item">Можно показать свой паспорт другому игроку</div>
-        <div class="fc-item">Сравнение паспортов между игроками</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">⭐ Репутация</div>
-        <div class="fc-item">+1 / -1 репутации игроку или городу раз в 24 часа</div>
-        <div class="fc-item">Топ-5 игроков и топ-5 городов по репутации</div>
-        <div class="fc-item">Высокая репутация — запись в книгу легенд</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">🏆 Книга легенд</div>
-        <div class="fc-item">Первый город, первый убитый Эндер-дракон</div>
-        <div class="fc-item">Легендарные предметы с выдающейся историей</div>
-        <div class="fc-item">Уникальные для всего сервера события</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">🧭 Дневник путешествий</div>
-        <div class="fc-item">Личная история каждого игрока отдельно от других</div>
-        <div class="fc-item">Первый визит в Нижний мир и в Край</div>
-        <div class="fc-item">Рекорд самой дальней точки от спавна</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">⚔️ Живые предметы</div>
-        <div class="fc-item">Оружие считает убийства прямо в лоре</div>
-        <div class="fc-item">Кирка помнит сломанные блоки, топор — срубленные деревья</div>
-        <div class="fc-item">Оповещение всем при поломке предмета с историей</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">⚰️ Система могил</div>
-        <div class="fc-item">После смерти на месте гибели появляется могила с твоей головой</div>
-        <div class="fc-item">Над ней — кто, когда и как погиб; забрать может только владелец, доверенные и админ</div>
-        <div class="fc-item">Броня и опыт возвращаются на свои места одним кликом</div>
-      </div>
-    </div>
-
-    <div style="text-align:center;">
-      <a href="https://qrenqq.github.io/qworldpatchnote/" target="_blank" class="dl-btn">📦 Все патчноуты плагина</a>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════
-       МИР ФЕРМ
-  ═══════════════════════════════════════════════ -->
-  <section id="tab-farmworld" class="tab-section">
-    <div style="text-align:center;margin-bottom:14px;">
-      <span class="new-badge">✦ Новое обновление</span>
-    </div>
-    <div style="text-align:center;margin-bottom:36px;">
-      <h2 class="section-title">🌾 Мир ферм</h2>
-      <p class="section-subtitle">Отдельные миры для добычи ресурсов — фармь спокойно, основной мир останется чистым</p>
-    </div>
-
-    <!-- Портал-визуал -->
-    <div class="portal-hero">
-      <svg class="portal-svg" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
-        <!-- рамка из плачущего обсидиана -->
-        <g fill="#2a1440">
-          <rect x="30" y="20" width="140" height="30" rx="3"/>
-          <rect x="30" y="210" width="140" height="30" rx="3"/>
-          <rect x="30" y="20" width="30" height="220" rx="3"/>
-          <rect x="140" y="20" width="30" height="220" rx="3"/>
-        </g>
-        <!-- фиолетовые вкрапления обсидиана -->
-        <g fill="#8b2fc9" opacity="0.7">
-          <rect x="38" y="30" width="7" height="7"/><rect x="150" y="60" width="7" height="7"/>
-          <rect x="42" y="120" width="7" height="7"/><rect x="156" y="180" width="7" height="7"/>
-          <rect x="40" y="215" width="7" height="7"/><rect x="120" y="28" width="7" height="7"/>
-          <rect x="152" y="220" width="7" height="7"/><rect x="35" y="170" width="7" height="7"/>
-        </g>
-        <!-- плёнка портала (стекло) -->
-        <rect class="film" x="60" y="50" width="80" height="160" fill="url(#filmgrad)"/>
-        <defs>
-          <linearGradient id="filmgrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#a855f7" stop-opacity="0.55"/>
-            <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.4"/>
-            <stop offset="100%" stop-color="#c084fc" stop-opacity="0.55"/>
-          </linearGradient>
-        </defs>
-        <!-- партиклы -->
-        <g fill="#e9a5ff">
-          <rect class="pp" x="80" y="180" width="4" height="4"/>
-          <rect class="pp" x="110" y="185" width="4" height="4"/>
-          <rect class="pp" x="95" y="175" width="4" height="4"/>
-          <rect class="pp" x="70" y="182" width="3" height="3"/>
-          <rect class="pp" x="122" y="178" width="3" height="3"/>
-        </g>
-      </svg>
-    </div>
-
-    <div class="card" style="margin-bottom:32px;">
-      <p style="color:#c4b5e8;line-height:1.8;font-size:0.95rem;">
-        <b style="color:#e2d9f3;">Мир ферм</b> — это отдельный верхний мир и отдельный ад, созданные специально
-        для добычи ресурсов. Копай, руби и фарми мобов сколько угодно, не боясь испортить ландшафт основного
-        мира и построек. Структуры, данжи и спавнеры генерируются как обычно — но лута в сундуках нет нигде,
-        чтобы ресурсы нельзя было бесконечно размножать.
-      </p>
-    </div>
-
-    <!-- Что внутри -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-bottom:32px;">
-      <div class="feature-card">
-        <div class="fc-title">🗺️ Два отдельных мира</div>
-        <div class="fc-item">Верхний мир ферм и ад ферм — только для добычи</div>
-        <div class="fc-item">Основной мир и постройки остаются нетронутыми</div>
-        <div class="fc-item">Порталы ферм-миров связаны между собой</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">🏰 Всё генерируется</div>
-        <div class="fc-item">Данжи, шахты, крепости и бастионы на месте</div>
-        <div class="fc-item">Спавнеры мобов работают как обычно</div>
-        <div class="fc-item">Руды, деревья и ресурсы — фарми без ограничений</div>
-      </div>
-      <div class="feature-card">
-        <div class="fc-title">🚫 Никакого дюпа</div>
-        <div class="fc-item">Лута в сундуках структур нет нигде</div>
-        <div class="fc-item">Никакого размножения ресурсов через фарм-миры</div>
-        <div class="fc-item">Порталов в Энд в мирах ферм не будет</div>
-      </div>
-    </div>
-
-    <!-- Как построить портал -->
-    <div style="text-align:center;margin-bottom:20px;">
-      <h3 style="font-size:1.3rem;font-weight:700;color:#c084fc;">🟪 Как попасть в мир ферм</h3>
-      <p style="color:#9d7dc8;font-size:0.88rem;margin-top:6px;">Собери свой собственный портал — прямо как в Незер, только особый</p>
-    </div>
-
-    <div class="steps" style="margin-bottom:28px;">
-      <div class="step-row">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">Построй рамку из плачущего обсидиана</div>
-          <div class="step-desc">Форма — как у портала в Незер (минимум 2×3 внутри, максимум 21×21). Только вместо обычного обсидиана используй <b style="color:#c4b5e8;">плачущий обсидиан</b>.</div>
+<!-- ═══ FARM WORLD (signature) ═══ -->
+<section class="sec" id="farm">
+  <div class="wrap">
+    <div class="farm-hero reveal">
+      <div class="farm-grid">
+        <div>
+          <span class="newtag">✦ Новое обновление</span>
+          <h2 class="display" style="font-size:clamp(1.9rem,4vw,2.7rem);color:#fff;margin:16px 0 12px">🌾 Мир ферм</h2>
+          <p style="color:var(--text-dim);font-size:1.03rem;max-width:34em">
+            Отдельный верхний мир и отдельный ад — только для добычи ресурсов. Копай, руби и фарми мобов
+            сколько угодно, не боясь испортить ландшафт основного мира. Структуры и спавнеры генерируются
+            как обычно, но лута в сундуках нет нигде — чтобы ресурсы нельзя было размножать.
+          </p>
         </div>
-      </div>
-      <div class="step-row">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">Подожги рамку огнивом</div>
-          <div class="step-desc">Проём затянется фиолетовым стеклом, вокруг заиграют частицы — портал активирован.</div>
-        </div>
-      </div>
-      <div class="step-row">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">Шагни в портал</div>
-          <div class="step-desc">Касание переносит тебя в мир ферм <b style="color:#c4b5e8;">на те же координаты</b> — мгновенно, без ожидания.</div>
-        </div>
-      </div>
-      <div class="step-row">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <div class="step-title">Возвращайся, когда захочешь</div>
-          <div class="step-desc">На той стороне <b style="color:#c4b5e8;">автоматически появится парный портал</b> — пройди через него и выйдешь в мире построек там, откуда пришёл. Парный портал всегда встаёт на поверхности, так что под землёй ты не окажешься.</div>
+        <div class="mini-portal">
+          <div class="mp-frame"></div>
+          <div class="mp-inner" id="mini-portal"></div>
         </div>
       </div>
     </div>
 
-    <!-- Итоговые теги -->
-    <div class="card">
-      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
-        <span class="farm-tag">✅ Структуры и данжи</span>
-        <span class="farm-tag">✅ Спавнеры мобов</span>
-        <span class="farm-tag">✅ Все руды и ресурсы</span>
-        <span class="farm-tag no">❌ Лут в сундуках</span>
-        <span class="farm-tag no">❌ Порталы в Энд</span>
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card reveal"><div class="card-ico">🗺️</div><h3>Два отдельных мира</h3><ul>
+        <li>Верхний мир ферм и ад ферм — только для добычи</li>
+        <li>Основной мир и постройки остаются нетронутыми</li>
+        <li>Порталы ферм-миров связаны между собой</li></ul></div>
+      <div class="card reveal"><div class="card-ico">🏰</div><h3>Всё генерируется</h3><ul>
+        <li>Данжи, шахты, крепости и бастионы на месте</li>
+        <li>Спавнеры мобов работают как обычно</li>
+        <li>Руды, деревья и ресурсы — фарми без ограничений</li></ul></div>
+      <div class="card reveal"><div class="card-ico">🚫</div><h3>Никакого дюпа</h3><ul>
+        <li>Лута в сундуках структур нет нигде</li>
+        <li>Никакого размножения ресурсов</li>
+        <li>Порталов в Энд в мирах ферм не будет</li></ul></div>
+    </div>
+
+    <div class="sec-head center reveal" style="margin:52px auto 30px">
+      <span class="eyebrow">Как попасть</span>
+      <h2 class="display" style="font-size:1.7rem">Собери свой портал</h2>
+      <p>Прямо как в Незер — только особый</p>
+    </div>
+
+    <div class="steps reveal">
+      <div class="step"><div class="step-n"></div><div class="step-b">
+        <h4>Построй рамку из плачущего обсидиана</h4>
+        <p>Форма как у портала в Незер (от 2×3 до 21×21 внутри). Вместо обычного обсидиана — <b style="color:var(--text)">плачущий обсидиан</b>.</p>
+      </div></div>
+      <div class="step"><div class="step-n"></div><div class="step-b">
+        <h4>Подожги рамку огнивом</h4>
+        <p>Проём затянется фиолетовым стеклом, вокруг заиграют частицы — портал активирован.</p>
+      </div></div>
+      <div class="step"><div class="step-n"></div><div class="step-b">
+        <h4>Шагни в портал</h4>
+        <p>Касание переносит тебя в мир ферм <b style="color:var(--text)">на те же координаты</b> — мгновенно, без ожидания.</p>
+      </div></div>
+      <div class="step"><div class="step-n"></div><div class="step-b">
+        <h4>Возвращайся, когда захочешь</h4>
+        <p>На той стороне <b style="color:var(--text)">сам появится парный портал</b> — пройди через него и выйдешь в мире построек там, откуда пришёл. Парный портал всегда встаёт на поверхности, так что под землёй не окажешься.</p>
+      </div></div>
+    </div>
+
+    <div class="card reveal" style="margin-top:24px">
+      <div class="chips">
+        <span class="chip">✅ Структуры и данжи</span>
+        <span class="chip">✅ Спавнеры мобов</span>
+        <span class="chip">✅ Все руды и ресурсы</span>
+        <span class="chip no">❌ Лут в сундуках</span>
+        <span class="chip no">❌ Порталы в Энд</span>
       </div>
-      <p style="font-size:0.82rem;color:#6b4f8a;margin-top:16px;text-align:center;">
-        🌱 Фармь спокойно — основной мир и постройки останутся чистыми.
-      </p>
+      <p style="text-align:center;color:var(--text-faint);font-size:0.85rem;margin-top:16px">🌱 Фармь спокойно — основной мир и постройки останутся чистыми.</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ═══════════════════════════════════════════════
-       КОМАНДЫ
-  ═══════════════════════════════════════════════ -->
-  <section id="tab-commands" class="tab-section">
-    <div style="text-align:center;margin-bottom:32px;">
-      <h2 class="section-title">Команды</h2>
-      <p class="section-subtitle">Все игровые команды плагина QWorld</p>
+<!-- ═══ COMMANDS ═══ -->
+<section class="sec" id="commands">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Справочник</span>
+      <h2 class="display">Команды</h2>
+      <p>Все игровые команды плагина QWorld</p>
     </div>
-
-    <div class="cmd-group-title">🔵 Доступны всем игрокам</div>
-    <div id="player-cmds"></div>
-
-    <div class="cmd-group-title" style="margin-top:28px;">🟡 Для мэра и зам-мэра города</div>
-    <div id="mayor-cmds"></div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════
-       КАСТОМНЫЕ КРАФТЫ
-  ═══════════════════════════════════════════════ -->
-  <section id="tab-crafts" class="tab-section">
-    <div style="text-align:center;margin-bottom:32px;">
-      <h2 class="section-title">Кастомные крафты</h2>
-      <p class="section-subtitle">Уникальные рецепты, которых нет в ванильном Minecraft</p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
-      <div class="card" style="text-align:center;">
-        <img src="craftframet.png" alt="Крафт прозрачной рамки" style="max-width:100%;border-radius:12px;display:block;margin:0 auto 14px;"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block';" />
-        <div class="img-fallback">craftframet.png</div>
-        <div style="font-weight:700;color:#c084fc;margin-bottom:6px;">🖼️ Прозрачная рамка</div>
-        <p style="font-size:0.85rem;color:#9d7dc8;">Рамка для предметов, которая не бросается в глаза и не портит вид постройки. Первый кастомный крафт на сервере — дальше будет больше.</p>
+    <div style="text-align:center" class="reveal">
+      <div class="cmd-switch">
+        <button class="on" id="tab-all" onclick="showCmds('all',this)">🔵 Для всех</button>
+        <button class="gold" id="tab-mayor" onclick="showCmds('mayor',this)">🟡 Для мэра</button>
       </div>
     </div>
-  </section>
+    <div class="cmd-list" id="cmd-list"></div>
+  </div>
+</section>
 
-  <!-- ═══════════════════════════════════════════════
-       РЕСУРС-ПАК И СБОРКА МОДОВ
-  ═══════════════════════════════════════════════ -->
-  <section id="tab-resources" class="tab-section">
-    <div style="text-align:center;margin-bottom:32px;">
-      <h2 class="section-title">Ресурс-пак и сборка модов</h2>
-      <p class="section-subtitle">Играть можно с телефона (Bedrock) и с компьютера (Java)</p>
+<!-- ═══ CRAFTS ═══ -->
+<section class="sec" id="crafts">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Уникальное</span>
+      <h2 class="display">Кастомные крафты</h2>
+      <p>Рецепты, которых нет в ванильном Minecraft</p>
     </div>
+    <div class="grid g3 reveal">
+      <div class="tile">
+        <img src="craftframet.png" alt="Крафт прозрачной рамки" style="max-width:100%;border-radius:12px;margin:0 auto 14px;display:block"
+          onerror="this.style.display='none'" />
+        <h3>🖼️ Прозрачная рамка</h3>
+        <p>Рамка для предметов, которая не бросается в глаза и не портит вид постройки. Первый кастомный крафт — дальше будет больше.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
-      <div class="card" style="text-align:center;">
-        <div style="font-size:2rem;margin-bottom:8px;">🎨</div>
-        <div style="font-weight:700;color:#c084fc;margin-bottom:8px;font-size:1.1rem;">Ресурс-пак сервера</div>
-        <p style="font-size:0.85rem;color:#9d7dc8;margin-bottom:6px;">Фирменный визуальный стиль QWorld. Нужен для корректного отображения кастомных предметов и интерфейсов.</p>
-        <p style="font-size:0.8rem;color:#9d7dc8;margin-bottom:18px;">Внутри уже встроен <b style="color:#c4b5e8;">KSEPSP</b> — отдельно ставить не нужно.</p>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-          <a href="https://drive.google.com/file/d/16kcaEYHZb5oFm4zd7HZM4V15CQSt7nMR/view?usp=sharing" target="_blank" class="dl-btn">⬇️ Скачать ресурс-пак</a>
-          <a href="https://cloud.mail.ru/public/W3m2/E1jeMUVyA" target="_blank" class="backup-btn">🔁 Резервная ссылка (Mail.ru Cloud)</a>
+<!-- ═══ RESOURCES ═══ -->
+<section class="sec" id="resources">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Установка</span>
+      <h2 class="display">Ресурс-пак и моды</h2>
+      <p>Играть можно с телефона (Bedrock) и с компьютера (Java)</p>
+    </div>
+    <div class="grid g2">
+      <div class="tile reveal">
+        <div class="emoji">🎨</div>
+        <h3>Ресурс-пак сервера</h3>
+        <p>Фирменный визуальный стиль QWorld. Нужен для кастомных предметов и интерфейсов. Внутри уже встроен <b style="color:var(--text)">KSEPSP</b> — отдельно ставить не нужно.</p>
+        <div class="dl">
+          <a href="https://drive.google.com/file/d/16kcaEYHZb5oFm4zd7HZM4V15CQSt7nMR/view?usp=sharing" target="_blank" class="btn btn-ghost btn-sm">⬇️ Скачать ресурс-пак</a>
+          <a href="https://cloud.mail.ru/public/W3m2/E1jeMUVyA" target="_blank" class="btn btn-gold btn-sm">🔁 Резервная ссылка</a>
         </div>
       </div>
-      <div class="card" style="text-align:center;">
-        <div style="font-size:2rem;margin-bottom:8px;">📦</div>
-        <div style="font-weight:700;color:#c084fc;margin-bottom:8px;font-size:1.1rem;">Сборка модов (Java)</div>
-        <p style="font-size:0.85rem;color:#9d7dc8;margin-bottom:18px;">Готовая сборка для игроков на Java Edition — ничего искать и настраивать отдельно не нужно.</p>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-          <a href="https://drive.google.com/file/d/1_uOqjbYR0mM4kZYtTtreaq5yiL4J1owC/view?usp=sharing" target="_blank" class="dl-btn">⬇️ Скачать сборку модов</a>
-          <a href="https://cloud.mail.ru/public/MZAN/F4LVwhXXy" target="_blank" class="backup-btn">🔁 Резервная ссылка (Mail.ru Cloud)</a>
+      <div class="tile reveal">
+        <div class="emoji">📦</div>
+        <h3>Сборка модов (Java)</h3>
+        <p>Готовая сборка для игроков на Java Edition — ничего искать и настраивать отдельно не нужно.</p>
+        <div class="dl">
+          <a href="https://drive.google.com/file/d/1_uOqjbYR0mM4kZYtTtreaq5yiL4J1owC/view?usp=sharing" target="_blank" class="btn btn-ghost btn-sm">⬇️ Скачать сборку модов</a>
+          <a href="https://cloud.mail.ru/public/MZAN/F4LVwhXXy" target="_blank" class="btn btn-gold btn-sm">🔁 Резервная ссылка</a>
         </div>
       </div>
     </div>
-
-    <div class="card" style="margin-top:24px;">
-      <p style="font-size:0.85rem;color:#9d7dc8;line-height:1.7;">
-        📱 <b style="color:#c4b5e8;">Bedrock (телефон/консоль):</b> подключение к серверу работает без установки модов и ресурс-пака отдельно — достаточно IP сервера.<br>
-        💻 <b style="color:#c4b5e8;">Java (ПК):</b> рекомендуем поставить сборку модов и ресурс-пак сервера для полного погружения.
+    <div class="card reveal" style="margin-top:20px">
+      <p style="font-size:0.88rem;color:var(--text-dim)">
+        📱 <b style="color:var(--text)">Bedrock (телефон/консоль):</b> подключение работает без модов и ресурс-пака — достаточно IP сервера.<br>
+        💻 <b style="color:var(--text)">Java (ПК):</b> рекомендуем поставить сборку модов и ресурс-пак для полного погружения.
       </p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ═══════════════════════════════════════════════
-       ПРАВИЛА
-  ═══════════════════════════════════════════════ -->
-  <section id="tab-rules" class="tab-section">
-    <div style="text-align:center;margin-bottom:32px;">
-      <h2 class="section-title">Правила сервера</h2>
-      <p class="section-subtitle">Соблюдение правил — залог комфортной игры для всех</p>
+<!-- ═══ RULES ═══ -->
+<section class="sec" id="rules">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Порядок</span>
+      <h2 class="display">Правила сервера</h2>
+      <p>Соблюдение правил — залог комфортной игры для всех</p>
+    </div>
+    <div class="reveal">
+      <div class="rule"><div class="rule-n">1</div><p><b>Уважение к другим игрокам.</b> Оскорбления, травля, разжигание конфликтов на почве личности игрока запрещены вне зависимости от RP-ситуации.</p></div>
+      <div class="rule"><div class="rule-n">2</div><p><b>Гриф разрешён только в рамках RP-конфликтов</b> (война городов, объявленный рейд) и по согласованию с администрацией. Гриф ради гринда или мести без RP-обоснования — бан.</p></div>
+      <div class="rule"><div class="rule-n">3</div><p><b>Читы, баги и эксплойты запрещены.</b> Нашёл баг — сообщи администрации. Использование даёт временное преимущество и заканчивается баном.</p></div>
+      <div class="rule"><div class="rule-n">4</div><p><b>Мультиаккаунты для обхода банов запрещены.</b> Наказание распространяется на все аккаунты игрока.</p></div>
+      <div class="rule"><div class="rule-n">5</div><p><b>Реклама сторонних серверов и ресурсов запрещена</b> в любом чате без согласования с администрацией.</p></div>
+      <div class="rule"><div class="rule-n">6</div><p><b>Уважай законы городов.</b> Конституция города (/laws) обязательна к соблюдению для жителей и гостей.</p></div>
+      <div class="rule"><div class="rule-n">7</div><p><b>Абуз багов чата и RP-систем в личных целях запрещён</b> — это касается репутации, легенд, дневника и других механик.</p></div>
+      <div class="rule"><div class="rule-n">8</div><p><b>Решения администрации не обсуждаются публично.</b> Не согласен с наказанием — подавай апелляцию в личные сообщения.</p></div>
     </div>
 
-    <div class="card" style="margin-bottom:24px;">
-      <div class="rule-row"><div class="rule-num">1</div><div class="rule-text"><b>Уважение к другим игрокам.</b> Оскорбления, травля, разжигание конфликтов на почве личности игрока — запрещены вне зависимости от RP-ситуации.</div></div>
-      <div class="rule-row"><div class="rule-num">2</div><div class="rule-text"><b>Гриф разрешён только в рамках RP-конфликтов</b> (война городов, объявленный рейд и т.п.) и только по согласованию с администрацией. Гриф ради гринда или мести без RP-обоснования — бан.</div></div>
-      <div class="rule-row"><div class="rule-num">3</div><div class="rule-text"><b>Читы, баги и эксплойты запрещены.</b> Обнаружил баг — сообщи администрации, использование даёт только временное преимущество и заканчивается баном.</div></div>
-      <div class="rule-row"><div class="rule-num">4</div><div class="rule-text"><b>Мультиаккаунты для обхода банов и наказаний запрещены.</b> Наказание распространяется на все аккаунты игрока.</div></div>
-      <div class="rule-row"><div class="rule-num">5</div><div class="rule-text"><b>Реклама сторонних серверов и ресурсов запрещена</b> в любом чате без согласования с администрацией.</div></div>
-      <div class="rule-row"><div class="rule-num">6</div><div class="rule-text"><b>Уважай законы городов.</b> Конституция города (/laws) обязательна к соблюдению для его жителей и гостей.</div></div>
-      <div class="rule-row"><div class="rule-num">7</div><div class="rule-text"><b>Использование внутриигровых и внешних багов чата/RP-систем в личных целях запрещено</b> — это касается репутации, легенд, дневника и других системных механик.</div></div>
-      <div class="rule-row"><div class="rule-num">8</div><div class="rule-text"><b>Решения администрации не обсуждаются публично.</b> Если не согласен с наказанием — подавай апелляцию в личные сообщения администрации.</div></div>
+    <div class="sec-head center reveal" style="margin:44px auto 22px">
+      <h2 class="display" style="font-size:1.5rem;color:var(--red)">🚫 Запрещённые моды и клиенты</h2>
+      <p style="font-size:0.9rem">Использование любого — мгновенный бан без предупреждения</p>
     </div>
-
-    <div style="text-align:center;margin-bottom:20px;">
-      <h3 style="font-size:1.2rem;font-weight:700;color:#f87171;">🚫 Запрещённые моды и клиенты</h3>
-      <p style="color:#9d7dc8;font-size:0.85rem;margin-top:6px;">Использование любого из перечисленного — мгновенный бан без предупреждения</p>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
-        <span class="ban-tag">🚫 X-Ray</span>
-        <span class="ban-tag">🚫 Freecam</span>
-        <span class="ban-tag">🚫 Killaura / Auto-PvP</span>
-        <span class="ban-tag">🚫 ESP / Wallhack</span>
-        <span class="ban-tag">🚫 Nuker</span>
-        <span class="ban-tag">🚫 Scaffold</span>
-        <span class="ban-tag">🚫 AutoClicker / макросы</span>
-        <span class="ban-tag">🚫 Хакнутые клиенты (Wurst, Impact и т.п.)</span>
+    <div class="card reveal">
+      <div class="bantags">
+        <span class="bantag">X-Ray</span><span class="bantag">Freecam</span>
+        <span class="bantag">Killaura / Auto-PvP</span><span class="bantag">ESP / Wallhack</span>
+        <span class="bantag">Nuker</span><span class="bantag">Scaffold</span>
+        <span class="bantag">AutoClicker / макросы</span><span class="bantag">Хакнутые клиенты (Wurst, Impact)</span>
       </div>
-      <p style="font-size:0.8rem;color:#6b4f8a;margin-top:16px;text-align:center;">
-        Разрешены только клиентские моды, не дающие игровое преимущество: minimap без отображения игроков/мобов, zoom, шейдеры, оптимизация (Sodium, Lithium и т.п.).
+      <p style="text-align:center;font-size:0.8rem;color:var(--text-faint);margin-top:16px">
+        Разрешены клиентские моды без игрового преимущества: minimap без игроков/мобов, zoom, шейдеры, оптимизация (Sodium, Lithium).
       </p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <div class="divider"></div>
-
-  <!-- ─── FOOTER ─── -->
-  <footer style="text-align:center;padding-top:24px;border-top:1px solid rgba(168,85,247,0.15);">
-    <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
-      <div class="avatar-wrap">
-        <img src="qwavatar.png" alt="QWorld Avatar"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-        <div class="avatar-placeholder" style="display:none;">qwavatar.png</div>
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="avatar"><img src="qwavatar.png" alt="QWorld" onerror="this.style.display='none';this.parentElement.textContent='QW'" /></div>
+        <div>
+          <div class="brand-name" style="font-size:1.3rem">Q<b>World</b></div>
+          <div style="font-size:0.82rem;color:var(--text-faint)">Minecraft SMP RP Server</div>
+        </div>
       </div>
-      <div style="text-align:left;">
-        <div style="font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#c084fc,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">QWorld</div>
-        <div style="font-size:0.82rem;color:#6b4f8a;">Minecraft SMP RP Server</div>
+      <div style="display:flex;gap:11px;flex-wrap:wrap">
+        <a href="https://t.me/qworld_s" target="_blank" class="btn btn-tg btn-sm">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          t.me/qworld_s
+        </a>
+        <a href="https://www.donationalerts.com/r/qworldsmprp" target="_blank" class="btn btn-gold btn-sm">💜 Донат</a>
       </div>
     </div>
-    <div class="btn-row" style="margin-bottom:16px;">
-      <a href="https://t.me/qworld_s" target="_blank" class="tg-btn" style="font-size:0.9rem;padding:10px 24px;">
-        <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;">
-          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-        </svg>
-        t.me/qworld_s
-      </a>
-      <a href="https://www.donationalerts.com/r/qworldsmprp" target="_blank" class="donate-btn" style="font-size:0.9rem;padding:10px 24px;">💜 Донат</a>
-    </div>
-    <p style="font-size:0.75rem;color:#4a2d6a;">© 2026 QWorld. Все права защищены.</p>
-  </footer>
-
-</main>
+    <div class="divider" style="margin:28px 0"></div>
+    <p style="text-align:center;font-size:0.78rem;color:var(--text-faint)">© 2026 QWorld. Все права защищены.</p>
+  </div>
+</footer>
 
 <script>
-  // ── COMMANDS DATA ──
-  const mayorCmds = [
-    { cmd: '/city invite', args: '<ник>', role: 'mayor', desc: 'Пригласить игрока в свой город (он принимает приглашение сам)' },
-    { cmd: '/city accept', args: '', role: 'mayor', desc: 'Просмотр и принятие запросов на вступление' },
-    { cmd: '/city coords', args: 'set <overworld|nether>', role: 'mayor', desc: 'Задать координаты города в верхнем мире или в аду' },
-    { cmd: '/city kick', args: '<ник>', role: 'mayor', desc: 'Исключить игрока из города' },
-    { cmd: '/city ban', args: '<ник> <причина>', role: 'mayor', desc: 'Запрет на въезд в город (причина обязательна)' },
-    { cmd: '/city unban', args: '<ник>', role: 'mayor', desc: 'Снять запрет на въезд' },
-    { cmd: '/city close', args: '<время> <причина>', role: 'mayor', desc: 'Закрыть город (оповещение всем). Время: 1d, 2h, 1d12h' },
-    { cmd: '/city open', args: '', role: 'mayor', desc: 'Открыть город досрочно' },
-    { cmd: '/city deputy', args: '<ник>', role: 'mayor', desc: 'Назначить заместителя мэра' },
-    { cmd: '/city register', args: '<ник>', role: 'mayor', desc: 'Выдать прописку жителю' },
-    { cmd: '/city unregister', args: '<ник>', role: 'mayor', desc: 'Отозвать прописку' },
-    { cmd: '/city confirm-leave', args: '<ник>', role: 'mayor', desc: 'Подтвердить выход игрока из города' },
-    { cmd: '/city description', args: '<текст>', role: 'mayor', desc: 'Установить описание города' },
-    { cmd: '/city motto', args: '<текст>', role: 'mayor', desc: 'Установить девиз города' },
-    { cmd: '/city whitelist', args: '<add/remove> <ник>', role: 'mayor', desc: 'Белый список для закрытого города' },
-    { cmd: '/city zone', args: '<close/open> <зона>', role: 'mayor', desc: 'Закрыть или открыть отдельный район города' },
-    { cmd: '/city log', args: '', role: 'mayor', desc: 'Журнал последних закрытий города' },
-    { cmd: '/laws', args: '<город> add <текст>', role: 'mayor', desc: 'Добавить закон в конституцию города' },
-    { cmd: '/laws', args: '<город> remove <номер>', role: 'mayor', desc: 'Удалить закон по номеру' },
-    { cmd: '/laws', args: '<город> clear', role: 'mayor', desc: 'Очистить все законы города' },
-  ];
+/* ══ COMMAND DATA ══ */
+const allCmds = [
+  {c:'/city cities',a:'',r:'all',d:'Список всех городов сервера с кнопками запроса'},
+  {c:'/city info',a:'[город]',r:'all',d:'Информация о городе: координаты, чёрный список и др.'},
+  {c:'/city join',a:'<город>',r:'all',d:'Отправить запрос на вступление в город'},
+  {c:'/city invites',a:'',r:'all',d:'Приглашения в города, которые прислали мэры'},
+  {c:'/city online',a:'',r:'all',d:'Кто из города онлайн'},
+  {c:'/city count',a:'',r:'all',d:'Сколько людей в городе'},
+  {c:'/city list',a:'',r:'all',d:'Список всех жителей с ролями'},
+  {c:'/city leave',a:'',r:'all',d:'Запрос на выход из города (нужно подтверждение мэра)'},
+  {c:'/city status',a:'[город]',r:'all',d:'Причина и время закрытия города'},
+  {c:'/passport',a:'',r:'all',d:'Показать свой паспорт'},
+  {c:'/passport show',a:'<ник>',r:'all',d:'Показать паспорт другому игроку'},
+  {c:'/passport setgender',a:'<м/ж>',r:'all',d:'Указать пол (только один раз)'},
+  {c:'/passport history',a:'',r:'all',d:'Показать записи в паспорте'},
+  {c:'/passport compare',a:'<ник>',r:'all',d:'Сравнить свой паспорт с другим'},
+  {c:'/grave list',a:'',r:'all',d:'Список твоих активных могил с координатами'},
+  {c:'/grave trust',a:'<ник>',r:'all',d:'Разрешить игроку забирать твои могилы'},
+  {c:'/grave untrust',a:'<ник>',r:'all',d:'Отозвать доступ к своим могилам'},
+  {c:'/grave trusted',a:'',r:'all',d:'Список доверенных лиц'},
+  {c:'/legends',a:'',r:'all',d:'Открыть книгу легенд сервера'},
+  {c:'/diary',a:'',r:'all',d:'Личный дневник путешествий'},
+  {c:'/journal',a:'',r:'all',d:'Итоги дня на сервере'},
+  {c:'/rep',a:'<игрок>',r:'all',d:'Посмотреть репутацию игрока'},
+  {c:'/rep',a:'<игрок> +/−',r:'all',d:'Изменить репутацию игрока (раз в 24 часа)'},
+  {c:'/rep city',a:'<город> [+/−]',r:'all',d:'Посмотреть или изменить репутацию города'},
+  {c:'/rep top',a:'',r:'all',d:'Топ-5 игроков по репутации'},
+  {c:'/laws',a:'<город>',r:'all',d:'Прочитать законы города (книга)'},
+];
+const mayorCmds = [
+  {c:'/city invite',a:'<ник>',r:'mayor',d:'Пригласить игрока в свой город (он принимает сам)'},
+  {c:'/city accept',a:'',r:'mayor',d:'Просмотр и принятие запросов на вступление'},
+  {c:'/city coords',a:'set <overworld|nether>',r:'mayor',d:'Задать координаты города в верхнем мире или в аду'},
+  {c:'/city kick',a:'<ник>',r:'mayor',d:'Исключить игрока из города'},
+  {c:'/city ban',a:'<ник> <причина>',r:'mayor',d:'Запрет на въезд в город (причина обязательна)'},
+  {c:'/city unban',a:'<ник>',r:'mayor',d:'Снять запрет на въезд'},
+  {c:'/city close',a:'<время> <причина>',r:'mayor',d:'Закрыть город. Время: 1d, 2h, 1d12h'},
+  {c:'/city open',a:'',r:'mayor',d:'Открыть город досрочно'},
+  {c:'/city deputy',a:'<ник>',r:'mayor',d:'Назначить заместителя мэра'},
+  {c:'/city register',a:'<ник>',r:'mayor',d:'Выдать прописку жителю'},
+  {c:'/city description',a:'<текст>',r:'mayor',d:'Установить описание города'},
+  {c:'/city motto',a:'<текст>',r:'mayor',d:'Установить девиз города'},
+  {c:'/city whitelist',a:'<add/remove> <ник>',r:'mayor',d:'Белый список для закрытого города'},
+  {c:'/city zone',a:'<close/open> <зона>',r:'mayor',d:'Закрыть или открыть район города'},
+  {c:'/laws',a:'<город> add <текст>',r:'mayor',d:'Добавить закон в конституцию города'},
+  {c:'/laws',a:'<город> remove <номер>',r:'mayor',d:'Удалить закон по номеру'},
+];
+const roleLabel = {all:'ВСЕ',mayor:'МЭР',admin:'АДМИН'};
 
-  const playerCmds = [
-    { cmd: '/city cities', args: '', role: 'all', desc: 'Список всех городов сервера с кнопками запроса' },
-    { cmd: '/city info', args: '[город]', role: 'all', desc: 'Информация о городе: координаты, чёрный список и др.' },
-    { cmd: '/city join', args: '<город>', role: 'all', desc: 'Отправить запрос на вступление в город' },
-    { cmd: '/city invites', args: '', role: 'all', desc: 'Приглашения в города, которые тебе прислали мэры' },
-    { cmd: '/city online', args: '', role: 'all', desc: 'Кто из города онлайн' },
-    { cmd: '/city count', args: '', role: 'all', desc: 'Сколько людей в городе' },
-    { cmd: '/city list', args: '', role: 'all', desc: 'Список всех жителей с ролями' },
-    { cmd: '/city leave', args: '', role: 'all', desc: 'Запрос на выход из города (требует подтверждения мэра)' },
-    { cmd: '/city status', args: '[город]', role: 'all', desc: 'Причина и время закрытия города' },
-    { cmd: '/passport', args: '', role: 'all', desc: 'Показать свой паспорт' },
-    { cmd: '/passport show', args: '<ник>', role: 'all', desc: 'Показать паспорт другому игроку' },
-    { cmd: '/passport setgender', args: '<м/ж>', role: 'all', desc: 'Указать пол (только один раз)' },
-    { cmd: '/passport history', args: '', role: 'all', desc: 'Показать записи в паспорте' },
-    { cmd: '/passport compare', args: '<ник>', role: 'all', desc: 'Сравнить свой паспорт с другим' },
-    { cmd: '/passport setfield', args: '<ник> <поле> <значение>', role: 'all', desc: 'Выдать запись в паспорт (нужны права)' },
-    { cmd: '/passport removefield', args: '<ник> <поле>', role: 'all', desc: 'Удалить запись из паспорта' },
-    { cmd: '/laws', args: '<город>', role: 'all', desc: 'Прочитать законы города (книга)' },
-    { cmd: '/legends', args: '', role: 'all', desc: 'Открыть книгу легенд сервера' },
-    { cmd: '/grave list', args: '', role: 'all', desc: 'Список твоих активных могил с координатами' },
-    { cmd: '/grave trust', args: '<ник>', role: 'all', desc: 'Разрешить игроку забирать твои могилы' },
-    { cmd: '/grave untrust', args: '<ник>', role: 'all', desc: 'Отозвать доступ к своим могилам' },
-    { cmd: '/grave trusted', args: '', role: 'all', desc: 'Список доверенных лиц' },
-    { cmd: '/diary', args: '', role: 'all', desc: 'Личный дневник путешествий' },
-    { cmd: '/journal', args: '', role: 'all', desc: 'Итоги дня на сервере' },
-    { cmd: '/journal history', args: '', role: 'all', desc: 'История журнала мира за последние дни' },
-    { cmd: '/rep', args: '<игрок>', role: 'all', desc: 'Посмотреть репутацию игрока' },
-    { cmd: '/rep', args: '<игрок> +/-', role: 'all', desc: 'Изменить репутацию игрока (раз в 24 часа)' },
-    { cmd: '/rep city', args: '<город> [+/-]', role: 'all', desc: 'Посмотреть или изменить репутацию города' },
-    { cmd: '/rep top', args: '', role: 'all', desc: 'Топ-5 игроков по репутации' },
-    { cmd: '/rep topcities', args: '', role: 'all', desc: 'Топ-5 городов по репутации' },
-  ];
+function renderCmds(list){
+  document.getElementById('cmd-list').innerHTML = list.map(x=>`
+    <div class="cmd">
+      <div>
+        <div class="cmd-code">${x.c}<span class="arg">${x.a?' '+x.a:''}</span></div>
+        <div class="cmd-desc">${x.d}</div>
+      </div>
+      <span class="role ${x.r}">${roleLabel[x.r]}</span>
+    </div>`).join('');
+}
+function showCmds(which,btn){
+  document.querySelectorAll('.cmd-switch button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderCmds(which==='all'?allCmds:mayorCmds);
+}
+renderCmds(allCmds);
 
-  const roleBadge = {
-    mayor: { cls: 'role-mayor', icon: '🟡', label: 'Мэр' },
-    all:   { cls: 'role-all',   icon: '🔵', label: 'Все' },
-  };
+/* ══ map notice ══ */
+function toggleMap(){const el=document.getElementById('map-notice');el.style.display=el.style.display==='none'?'block':'none';}
 
-  function buildCmd(c) {
-    const rb = roleBadge[c.role] || roleBadge.all;
-    return `
-      <div class="cmd-row">
-        <div>
-          <div class="cmd-code">${c.cmd}<span class="arg">${c.args ? ' ' + c.args : ''}</span></div>
-          <div class="cmd-desc">${c.desc}</div>
-        </div>
-        <span class="role-badge ${rb.cls}">${rb.icon} ${rb.label}</span>
-      </div>`;
+/* ══ reveal on scroll ══ */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ══ scrollspy nav ══ */
+const navLinks=[...document.querySelectorAll('.nav a')];
+const spy=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));
+    }
+  });
+},{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
+
+/* ══ obsidian speckle on hero portal frame ══ */
+(function(){
+  const frame=document.querySelector('.portal-obsidian');
+  if(!frame)return;
+  for(let i=0;i<10;i++){
+    const s=document.createElement('span');
+    s.className='speck';
+    s.style.left=(Math.random()*88+4)+'%';
+    s.style.top=(Math.random()*90+3)+'%';
+    s.style.opacity=(Math.random()*0.4+0.3).toFixed(2);
+    frame.appendChild(s);
   }
+})();
 
-  document.getElementById('player-cmds').innerHTML = playerCmds.map(buildCmd).join('');
-  document.getElementById('mayor-cmds').innerHTML = mayorCmds.map(buildCmd).join('');
-
-  // ── MAP NOTICE ──
-  function toggleMapNotice() {
-    const el = document.getElementById('map-notice');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+/* ══ rising particles inside portals ══ */
+function portalParticles(el,count){
+  if(!el)return;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('span');
+    p.className='pparticle';
+    p.style.left=(Math.random()*88+6)+'%';
+    const dur=(Math.random()*2+2.4).toFixed(2);
+    const delay=(Math.random()*3).toFixed(2);
+    p.style.animation=`floatUp ${dur}s ${delay}s ease-in-out infinite`;
+    el.appendChild(p);
   }
+}
+const styleEl=document.createElement('style');
+styleEl.textContent='@keyframes floatUp{0%{transform:translateY(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(-220px);opacity:0}}';
+document.head.appendChild(styleEl);
+portalParticles(document.getElementById('hero-portal'),14);
+portalParticles(document.getElementById('mini-portal'),10);
 
-  // ── MAIN TAB SWITCHING ──
-  function switchSection(id, btn) {
-    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.site-nav-link').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + id).classList.add('active');
-    btn.classList.add('active');
-    window.scrollTo({ top: document.querySelector('.site-nav').offsetTop - 20, behavior: 'smooth' });
+/* ══ ambient particle field (canvas) ══ */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cv=document.getElementById('particles');const ctx=cv.getContext('2d');
+  let w,h,parts;
+  function size(){w=cv.width=innerWidth;h=cv.height=innerHeight;}
+  function init(){
+    size();
+    parts=Array.from({length:Math.min(60,Math.floor(w/24))},()=>({
+      x:Math.random()*w,y:Math.random()*h,
+      r:Math.random()*2+0.6,
+      vy:-(Math.random()*0.35+0.08),
+      vx:(Math.random()-0.5)*0.15,
+      a:Math.random()*0.5+0.15
+    }));
   }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(const p of parts){
+      p.y+=p.vy;p.x+=p.vx;
+      if(p.y<-5){p.y=h+5;p.x=Math.random()*w;}
+      if(p.x<-5)p.x=w+5;if(p.x>w+5)p.x=-5;
+      ctx.beginPath();
+      ctx.fillStyle=`rgba(192,132,252,${p.a})`;
+      ctx.shadowBlur=8;ctx.shadowColor='rgba(168,85,247,0.6)';
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  init();draw();
+  addEventListener('resize',init);
+})();
 </script>
-
 </body>
 </html>
